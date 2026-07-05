@@ -10,6 +10,7 @@ This directory contains the sequenced master planning artifact for the Family Tr
 ## Documents
 
 - [Unified Master Plan](./master-plan.md) - all 17 requested phases in order.
+- [Full Execution Team](./execution-team.md) - team structure, roles, squads, hiring order, quality gates, and operating cadence.
 
 ## Core product position
 
