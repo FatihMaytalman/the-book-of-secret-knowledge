@@ -1309,12 +1309,11 @@ Family memories are fragmented across WhatsApp, Facebook, Instagram, iCloud, Goo
 Family Tree should become the master hub for a family's digital social life:
 
 ```text
-[WhatsApp]       ──┐
-[Facebook]       ──┤
-[Instagram]      ──┤
-[iCloud Photos]  ──┼──> Family Tree master archive ──> publish/share outward
-[Google Photos]  ──┤
-[Future sources] ──┘
+[WhatsApp] ──→ ──────────────────────────────┐
+[Facebook] ──→                               ↓
+[Instagram]──→ ──→ FAMILY TREE (Master Hub) ──→ [Publish back out]
+[iCloud]   ──→                               ↑
+[Google Photos]→ ─────────────────────────────┘
 ```
 
 The product does not compete with social networks. It turns them into input and output channels while preserving the family-owned truth inside Family Tree.
@@ -1416,7 +1415,22 @@ Family Tree memory/post
   -> outbound publish record and audit event
 ```
 
-## 18.5 Provider integration matrix
+## 18.5 Technical requirements
+
+| Feature | Technology |
+| --- | --- |
+| Facebook import/export | Meta Graph API |
+| Instagram import/export | Instagram Basic Display API plus Instagram publishing APIs where account type permits |
+| WhatsApp media import | WhatsApp Business API for compliant business workflows; user chat export for personal archive MVP |
+| iCloud photo sync | CloudKit API where feasible; user-owned export/import fallback |
+| Google Photos sync | Google Photos Library API |
+| Social publishing | Custom integration layer plus OAuth2 |
+| Private family feed | Custom activity stream using NestJS, Redis, and PostgreSQL |
+| Stories feature | Time-limited media module with 24-hour or permanent preservation policy |
+| Reactions and comments | Extend collaboration module for feed interactions |
+| Cross-platform dedup | Perceptual hash comparison and canonical SHA-256 matching on import |
+
+## 18.6 Provider integration matrix
 
 | Platform | Import path | Publish path | Key caution |
 | --- | --- | --- | --- |
@@ -1431,7 +1445,7 @@ Family Tree memory/post
 
 Implementation principle: build connector adapters behind a stable internal interface so platform changes do not leak into the family archive domain.
 
-## 18.6 Data model additions
+## 18.7 Data model additions
 
 Add PostgreSQL entities:
 
@@ -1463,7 +1477,7 @@ Important fields:
 - family visibility policy,
 - outbound publish status.
 
-## 18.7 Cross-platform deduplication
+## 18.8 Cross-platform deduplication
 
 Social imports must enter the same canonical deduplication engine described in Phase 16.
 
@@ -1487,7 +1501,7 @@ Example:
 3. The dedup engine selects one canonical `MediaAsset`.
 4. The UI shows: "Saved once. Imported from WhatsApp, Instagram, and Google Photos."
 
-## 18.8 Privacy rules
+## 18.9 Privacy rules
 
 Non-negotiable:
 
@@ -1503,7 +1517,7 @@ Non-negotiable:
 - Public publishing requires warnings when living persons, minors, documents, or sensitive relationships are involved.
 - GDPR export and deletion workflows must include third-party import metadata.
 
-## 18.9 Private family feed architecture
+## 18.10 Private family feed architecture
 
 The private feed should be a custom activity stream, not a clone of public social networks.
 
@@ -1530,7 +1544,7 @@ Avoid:
 - ads,
 - selling behavioral data.
 
-## 18.10 Publishing governance
+## 18.11 Publishing governance
 
 Outbound publishing should be permissioned by role and content sensitivity.
 
@@ -1553,7 +1567,7 @@ All outbound publish actions create an audit event with:
 - provider response ID,
 - content hash of what was sent.
 
-## 18.11 API and worker requirements
+## 18.12 API and worker requirements
 
 REST endpoints:
 
@@ -1576,7 +1590,7 @@ Workers:
 - publish delivery worker,
 - revoked consent cleanup worker.
 
-## 18.12 User experience
+## 18.13 User experience
 
 Key screens:
 
@@ -1597,7 +1611,7 @@ UX copy should reinforce trust:
 - "Saved once from three places."
 - "Review before sharing outside your family."
 
-## 18.13 Future additions
+## 18.14 Future additions
 
 - TikTok family video import.
 - YouTube family channel integration.
@@ -1607,7 +1621,14 @@ UX copy should reinforce trust:
 - Email inbox import for old family letters and attachments.
 - Scanner app/import workflow for physical albums.
 
-## 18.14 Key risks and mitigations
+## 18.15 Key insight for development
+
+> Family Tree does not compete with social networks.  
+> Family Tree is what social networks should have been:  
+> private, permanent, intelligent, and owned entirely by the family.  
+> Social networks become input/output channels. Family Tree is the truth.
+
+## 18.16 Key risks and mitigations
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
@@ -1619,7 +1640,7 @@ UX copy should reinforce trust:
 | Imported comments expose non-family data | Privacy violation | Import filters, redaction, and review queues |
 | Token compromise | Account risk | Encrypt tokens, rotate, revoke, audit, least privilege |
 
-## 18.15 Success criteria
+## 18.17 Success criteria
 
 Phase 18 succeeds when:
 
