@@ -335,6 +335,39 @@ The project should be organized into squads with clear product ownership. Early 
 - Push notification opt-in quality.
 - Voice story creation rate.
 
+## 2.8 Social Network Integration Squad
+
+**Mission:** Make Family Tree the master hub for external social memories while keeping import, private family sharing, and outbound publishing consent-aware.
+
+**Owns**
+
+- Facebook, Instagram, WhatsApp, iCloud, Google Photos, and future connector strategy.
+- OAuth consent and token lifecycle with the security team.
+- Social import workers.
+- Social provenance.
+- Private family feed.
+- Stories, reactions, and social milestones.
+- Publish-out previews and delivery.
+- Disconnect and imported-data deletion workflows.
+
+**Core roles**
+
+- Backend integrations engineer.
+- OAuth/security engineer.
+- Product manager for social workflows.
+- Frontend/mobile engineer for feed and publishing UX.
+- QA engineer for provider and permission test matrices.
+- Privacy/legal advisor.
+
+**Key success metrics**
+
+- Successful import completion rate.
+- Duplicate media avoided during social imports.
+- Imported memories with visible provenance.
+- Outbound publish actions with complete audit records.
+- Consent revocation cleanup time.
+- Permission/privacy incidents: target zero.
+
 ---
 
 # 3. Shared specialist functions

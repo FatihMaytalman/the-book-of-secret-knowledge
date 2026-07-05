@@ -1300,6 +1300,339 @@ Production is successful when a non-technical family can:
 
 ---
 
+# Phase 18 - Social Network Integration Layer
+
+## 18.1 Problem
+
+Family memories are fragmented across WhatsApp, Facebook, Instagram, iCloud, Google Photos, and future social/media platforms. Each platform owns only a slice of the family's story. The result is duplicated media, missing context, corporate lock-in, and memories that disappear when accounts are lost, apps change, or people pass away.
+
+Family Tree should become the master hub for a family's digital social life:
+
+```text
+[WhatsApp]       ──┐
+[Facebook]       ──┤
+[Instagram]      ──┤
+[iCloud Photos]  ──┼──> Family Tree master archive ──> publish/share outward
+[Google Photos]  ──┤
+[Future sources] ──┘
+```
+
+The product does not compete with social networks. It turns them into input and output channels while preserving the family-owned truth inside Family Tree.
+
+## 18.2 Product position
+
+Family Tree is what social networks should have been for families: private, permanent, intelligent, consent-aware, and owned by the family. Social platforms remain useful for distribution, but Family Tree becomes the canonical record.
+
+## 18.3 Three pillars
+
+### Pillar 1 - Import: social networks feed into Family Tree
+
+Family Tree should connect to approved external sources and import media, posts, captions, comments, dates, locations, and provenance where APIs and user permissions allow.
+
+Supported source targets:
+
+- WhatsApp exports and future WhatsApp Business API workflows.
+- Facebook posts, albums, and photos through Meta Graph API where permitted.
+- Instagram media through Instagram APIs where permitted.
+- Google Photos through Google Photos Library API.
+- iCloud Photos where CloudKit/user-export paths are feasible.
+
+Import requirements:
+
+- OAuth2 or platform-native consent for each source.
+- Scheduled sync: manual, daily, weekly, or paused.
+- Source provenance on every imported item.
+- Deduplication across all sources before canonical storage.
+- Profile matching suggestions for family members in imported media.
+- User review for ambiguous imports, private captions, and face/person matches.
+- Revocation and deletion workflows per source connection.
+
+### Pillar 2 - Private family social network
+
+Family Tree should include a private family feed that captures the emotional value of social posting without ads, strangers, algorithmic manipulation, or data harvesting.
+
+Core features:
+
+- Family-only posts.
+- Stories that can expire visually but remain preservable by policy.
+- Reactions.
+- Comments.
+- Milestone posts.
+- Birthday and anniversary prompts.
+- Life-event cards generated from the family graph.
+- Memory resurfacing: "On this day", "grandparents' anniversary", "first family trip".
+- Archive-first preservation of every post, comment, and attached media according to family policy.
+
+Design rule: the feed must be calm and archival, not addictive. Chronology, family relevance, and privacy beat engagement optimization.
+
+### Pillar 3 - Publish out: Family Tree pushes to social networks
+
+Family Tree should allow authorized users to create one memory or milestone and publish it outward to selected platforms.
+
+Publishing requirements:
+
+- Explicit user action for every public share.
+- Per-platform preview before posting.
+- Public/private audience controls.
+- Watermark/caption/source controls.
+- Sensitive-person and minor warnings.
+- Approval workflow for family-wide or memorial content.
+- Audit event for every outbound publish.
+- Local canonical record remains unchanged even if external posts are removed.
+
+## 18.4 Technical architecture
+
+Add a Social Integration module to the NestJS backend:
+
+- `SocialConnectionsModule`
+- `SocialImportModule`
+- `SocialPublishModule`
+- `ActivityFeedModule`
+- `SocialConsentModule`
+- `SocialProvenanceModule`
+
+```text
+External platforms
+  -> OAuth / platform consent
+  -> connector-specific sync worker
+  -> normalized social import event
+  -> malware/content validation
+  -> media/document/text extraction
+  -> deduplication pipeline
+  -> canonical MediaAsset / Post / LifeEvent / SourceCitation records
+  -> review queues
+  -> private family feed and timeline
+```
+
+Outbound publishing:
+
+```text
+Family Tree memory/post
+  -> permission and sensitivity checks
+  -> platform formatting
+  -> user preview
+  -> explicit publish action
+  -> provider API call
+  -> outbound publish record and audit event
+```
+
+## 18.5 Provider integration matrix
+
+| Platform | Import path | Publish path | Key caution |
+| --- | --- | --- | --- |
+| Facebook | Meta Graph API for permitted photos, albums, and posts | Meta Graph API for permitted pages/profiles where supported | Permissions and review requirements change frequently |
+| Instagram | Instagram APIs for media where account type/API permissions allow | Instagram publishing APIs where account type supports it | Personal account limitations may require export-first workflows |
+| WhatsApp | User chat export in MVP; WhatsApp Business API for future structured workflows | Share sheet/deep link in MVP; Business API only for compliant business messaging | WhatsApp Business API is not a general personal chat history import API |
+| iCloud Photos | User export/import workflow first; CloudKit only where user-owned app container access is feasible | Native share sheet/export package | Apple privacy model limits broad server-side iCloud scraping |
+| Google Photos | Google Photos Library API where scopes and API terms allow | Library API or share/export workflow where permitted | API capabilities and quotas may restrict full archival sync |
+| TikTok | Future export/API workflow | Future API/share workflow | Privacy and API access constraints |
+| YouTube | Data API for family channels/playlists | Data API upload for authorized channels | Large video storage and copyright issues |
+| LinkedIn | Future milestone import where permitted | Future profile/share integration | Professional/public context differs from family archive |
+
+Implementation principle: build connector adapters behind a stable internal interface so platform changes do not leak into the family archive domain.
+
+## 18.6 Data model additions
+
+Add PostgreSQL entities:
+
+- `social_provider`
+- `social_connection`
+- `social_sync_job`
+- `social_import_item`
+- `social_publish_target`
+- `social_publish_record`
+- `activity_feed_item`
+- `reaction`
+- `feed_comment`
+- `story`
+- `story_visibility`
+- `external_identity_match`
+
+Important fields:
+
+- provider name,
+- external account ID,
+- OAuth scopes granted,
+- token status and expiry,
+- sync cadence,
+- last sync cursor,
+- source URL or external ID,
+- import provenance,
+- deletion policy,
+- user consent state,
+- family visibility policy,
+- outbound publish status.
+
+## 18.7 Cross-platform deduplication
+
+Social imports must enter the same canonical deduplication engine described in Phase 16.
+
+Additional social-specific signals:
+
+- platform external IDs,
+- source post timestamps,
+- captions,
+- album names,
+- sender/uploader identity,
+- chat thread name,
+- post URL,
+- EXIF availability or absence,
+- compressed WhatsApp/media variants,
+- platform-specific resized image dimensions.
+
+Example:
+
+1. A photo appears in WhatsApp, Instagram, and Google Photos.
+2. Import workers create three `MediaInstance` records with three provenance sources.
+3. The dedup engine selects one canonical `MediaAsset`.
+4. The UI shows: "Saved once. Imported from WhatsApp, Instagram, and Google Photos."
+
+## 18.8 Privacy rules
+
+Non-negotiable:
+
+- Imported social media data is never shared back publicly without explicit user action.
+- Every imported item retains source provenance.
+- Users can disconnect any platform at any time.
+- Users can delete imported data subject to family archive retention and legal/privacy policy.
+- OAuth scopes must be minimal.
+- Access tokens must be encrypted at rest.
+- Sync jobs must respect revoked consent immediately.
+- Family members control their own profile visibility independently.
+- Imported content involving minors requires restrictive defaults.
+- Public publishing requires warnings when living persons, minors, documents, or sensitive relationships are involved.
+- GDPR export and deletion workflows must include third-party import metadata.
+
+## 18.9 Private family feed architecture
+
+The private feed should be a custom activity stream, not a clone of public social networks.
+
+Storage:
+
+- PostgreSQL for durable feed items, comments, reactions, visibility, and audit.
+- Redis for fanout/cache where needed.
+- Media assets linked through canonical `MediaAsset` records.
+- Search indexes for feed text and semantic retrieval.
+
+Feed ranking:
+
+1. pinned family announcements,
+2. recent family posts,
+3. milestones and life events,
+4. memories resurfaced by date,
+5. review requests requiring user action.
+
+Avoid:
+
+- opaque engagement algorithms,
+- infinite-scroll addiction loops,
+- public follower/fame mechanics,
+- ads,
+- selling behavioral data.
+
+## 18.10 Publishing governance
+
+Outbound publishing should be permissioned by role and content sensitivity.
+
+Publishing policy examples:
+
+- Personal post: creator can publish their own memory outward.
+- Family-wide milestone: admin or approval workflow required.
+- Deceased person's memorial content: memorial steward or admin approval required.
+- Minor's image: parent/guardian approval required.
+- Sensitive document: blocked by default.
+
+All outbound publish actions create an audit event with:
+
+- actor,
+- family,
+- source Family Tree item,
+- destination provider,
+- audience setting,
+- timestamp,
+- provider response ID,
+- content hash of what was sent.
+
+## 18.11 API and worker requirements
+
+REST endpoints:
+
+- `POST /api/social/connections/:provider/start`
+- `GET /api/social/connections`
+- `DELETE /api/social/connections/:id`
+- `POST /api/social/connections/:id/sync`
+- `GET /api/social/imports/review`
+- `POST /api/social/imports/:id/accept`
+- `POST /api/social/imports/:id/reject`
+- `POST /api/social/publish/preview`
+- `POST /api/social/publish`
+
+Workers:
+
+- provider sync worker,
+- token refresh worker,
+- import normalization worker,
+- social media dedup worker,
+- publish delivery worker,
+- revoked consent cleanup worker.
+
+## 18.12 User experience
+
+Key screens:
+
+- Social connections settings.
+- Import permissions explanation.
+- Source-specific sync status.
+- Imported memories review queue.
+- Private family feed.
+- Story creation.
+- Milestone composer.
+- Publish preview and destination picker.
+- Provenance detail: "where this memory came from."
+
+UX copy should reinforce trust:
+
+- "Import only. Nothing is posted publicly."
+- "Disconnect anytime."
+- "Saved once from three places."
+- "Review before sharing outside your family."
+
+## 18.13 Future additions
+
+- TikTok family video import.
+- YouTube family channel integration.
+- Twitter/X memory archiving.
+- LinkedIn milestone import for career achievements.
+- DNA platform connections such as AncestryDNA and 23andMe.
+- Email inbox import for old family letters and attachments.
+- Scanner app/import workflow for physical albums.
+
+## 18.14 Key risks and mitigations
+
+| Risk | Impact | Mitigation |
+| --- | --- | --- |
+| Provider APIs limit personal-data access | Some imports cannot be fully automated | Support export-based imports and manual upload workflows |
+| OAuth scope overreach | User distrust and platform rejection | Minimal scopes, clear consent screens, provider review discipline |
+| Accidental public sharing | Severe privacy harm | Explicit publish action, previews, sensitivity warnings, approvals |
+| Duplicated social imports | Storage bloat and confusion | Route all imports through canonical deduplication |
+| Platform terms change | Integration breakage | Connector abstraction and graceful degradation |
+| Imported comments expose non-family data | Privacy violation | Import filters, redaction, and review queues |
+| Token compromise | Account risk | Encrypt tokens, rotate, revoke, audit, least privilege |
+
+## 18.15 Success criteria
+
+Phase 18 succeeds when:
+
+1. a user can connect at least one external source,
+2. imported media is deduplicated against the existing family archive,
+3. provenance is visible on imported memories,
+4. private family feed posts are archived and searchable,
+5. outbound publishing requires explicit preview and confirmation,
+6. disconnect/delete workflows work,
+7. and no import or publish action bypasses family permissions.
+
+---
+
 # Cross-phase architectural decisions
 
 ## ADR-001: Use Immich as the Phase 1 media foundation

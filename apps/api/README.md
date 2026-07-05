@@ -11,6 +11,9 @@ This service will own Family Tree's canonical product data:
 - deduplication decisions,
 - document/OCR state,
 - AI workflow state,
+- social network connections,
+- private family feed activity,
+- outbound publish records,
 - audit logs,
 - exports,
 - and backup health reporting.
@@ -24,6 +27,7 @@ This service will own Family Tree's canonical product data:
 5. Create one canonical media asset with many upload/source instances.
 6. Emit audit events for sensitive mutations.
 7. Provide REST/GraphQL APIs for the web app.
+8. Prepare module boundaries for future social import, private feed, and publish-out workflows.
 
 ## Boundary with Immich
 

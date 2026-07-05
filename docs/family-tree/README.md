@@ -5,11 +5,11 @@ Organization: **AOM Legacy**
 Domain: **AOMLegacy.com**  
 Founder: **Fatih Maytalman**
 
-This directory contains the sequenced master planning artifact for the Family Tree platform. It starts with the Product Requirements Document and continues through architecture, data modeling, AI, security, UX, infrastructure, cost, MVP, deduplication, and production release planning.
+This directory contains the sequenced master planning artifact for the Family Tree platform. It starts with the Product Requirements Document and continues through architecture, data modeling, AI, security, UX, infrastructure, cost, MVP, deduplication, production release planning, and social network integration.
 
 ## Documents
 
-- [Unified Master Plan](./master-plan.md) - all 17 requested phases in order.
+- [Unified Master Plan](./master-plan.md) - all 18 requested phases in order.
 - [Full Execution Team](./execution-team.md) - team structure, roles, squads, hiring order, quality gates, and operating cadence.
 - [Self-Hosted Infrastructure](../../infra/self-hosted/README.md) - Docker Compose baseline, environment template, and operations runbooks.
 - [AOM Legacy API](../../apps/api/README.md) - backend service responsibilities and Immich boundary.
@@ -24,6 +24,7 @@ Family Tree is a private digital family legacy ecosystem, not a conventional gen
 - an AI-assisted heritage archive,
 - a graph-based family tree,
 - collaborative storytelling,
+- a private family social layer with external import/export channels,
 - long-term exportability,
 - and a deduplication engine designed around the "WhatsApp problem."
 

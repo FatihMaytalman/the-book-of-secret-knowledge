@@ -11,6 +11,9 @@ The web app is the primary browser experience for:
 - interactive family tree,
 - duplicate review queue,
 - face/OCR/AI review queues,
+- social connection settings,
+- private family feed,
+- outbound publish previews,
 - backup and export administration,
 - permissions and invitations.
 

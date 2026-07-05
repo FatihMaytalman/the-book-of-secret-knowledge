@@ -9,9 +9,12 @@ Use the Immich mobile app first for reliable camera roll backup over Tailscale. 
 - family dashboard,
 - person profiles,
 - voice story capture,
+- private family feed,
+- story creation,
 - duplicate review,
 - face tag confirmation,
 - comments and memories,
+- publish-out preview and approval,
 - approval workflows,
 - backup health visibility for admins.
 
