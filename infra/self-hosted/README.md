@@ -39,7 +39,7 @@ infra/self-hosted/
 | `qdrant` | Vector search and AI retrieval |
 | `clamav` | Upload malware scanning |
 | `aom-api` | NestJS API scaffold with PostgreSQL migrations |
-| `aom-web` | Placeholder for future Next.js app |
+| `aom-web` | Next.js web app with design tokens and dashboard shell |
 
 ## First boot
 
@@ -64,11 +64,13 @@ docker compose up -d aom-postgres aom-redis neo4j qdrant clamav
 docker compose --profile aom-app up -d aom-api
 ```
 
-7. Start the web placeholder only when useful:
+7. Start the web app with the API:
 
 ```bash
-docker compose --profile aom-app up -d aom-web
+docker compose --profile aom-app up -d aom-api aom-web
 ```
+
+The web app is available on port `3000` and through nginx at `/login`, `/families`, and `/family/*`.
 
 ## Important notes
 

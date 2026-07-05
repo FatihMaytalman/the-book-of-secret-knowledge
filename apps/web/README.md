@@ -1,51 +1,67 @@
 # AOM Legacy Web App
 
-Planned stack: **Next.js App Router**, **React**, **TypeScript**, **Tailwind CSS**, **Framer Motion**, and **TanStack Query**.
+Next.js App Router frontend for the Family Tree platform.
 
-The web app is the primary browser experience for:
+Stack: **Next.js**, **React**, **TypeScript**, **Tailwind CSS v4**, **TanStack Query**, **Framer Motion**, and shared types from `@aomlegacy/shared`.
 
-- family dashboard,
-- media timeline,
-- people directory,
-- person profiles,
-- interactive family tree,
-- duplicate review queue,
-- face/OCR/AI review queues,
-- social connection settings,
-- private family feed,
-- outbound publish previews,
-- backup and export administration,
-- permissions and invitations.
+## Phase 1 status
 
-## Phase 1 screens
+Implemented in this scaffold:
 
-1. Sign in and family switcher.
-2. Family dashboard with recent uploads and backup health.
-3. People directory.
-4. Person profile with attached media and life events.
-5. Timeline view.
-6. Media review queue for exact/near duplicate decisions.
-7. Admin settings for invites, backups, and exports.
+- Heritage design tokens from the master plan (navy, gold, turquoise, cream, warm white).
+- Typography via Playfair Display, Inter, and JetBrains Mono.
+- Public landing page, sign-in shell, and family switcher.
+- Family workspace shell with sidebar navigation.
+- Dashboard shell with API health probe, recent uploads placeholders, and backup health placeholders.
+- Route shells for timeline, people, tree, media, review, and settings.
 
-## Current scaffold
+Planned next:
 
-The initial App Router shell includes:
+- Authentication wired to the NestJS API.
+- TanStack Query hooks backed by `@aomlegacy/shared` types.
+- Immich-backed media grid and duplicate review flows.
 
-- `/` - museum-style dashboard and Phase 1 readiness overview.
-- `/people` - starter family profile cards.
-- `/review` - deduplication review concepts.
-- `/social` - Phase 18 social import/feed/publish hub.
+## Local development
 
-The scaffold uses a Next.js canary release because the latest stable line available during setup still resolved a vulnerable transitive PostCSS version in `npm audit`. Revisit this pin when a stable Next.js release includes the patched PostCSS dependency.
-
-## Local commands
-
-From the repository root:
+From the monorepo root:
 
 ```bash
+npm install
 npm run dev:web
-npm run typecheck -w apps/web
-npm run build -w apps/web
+```
+
+Or from this directory:
+
+```bash
+cd apps/web
+cp .env.example .env.local
+npm run dev
+```
+
+The app listens on port `3000` by default.
+
+## Self-hosted routing
+
+When running through the Docker Compose stack:
+
+- Immich remains available at `http://localhost:8080/`.
+- AOM Legacy web routes are proxied at `/login`, `/families`, and `/family/*`.
+- The full Next.js app is also exposed directly on port `3000`.
+
+## App routes
+
+```text
+/                      public landing page
+/login                 authentication shell
+/families              family switcher
+/family/[id]           dashboard
+/family/[id]/timeline  family timeline
+/family/[id]/people    people directory
+/family/[id]/people/[personId]
+/family/[id]/tree      interactive tree
+/family/[id]/media     media library
+/family/[id]/review    dedup/faces/OCR/AI review queue
+/family/[id]/settings  roles, backups, export, privacy
 ```
 
 ## Design foundation
@@ -58,3 +74,5 @@ The design system follows the premium heritage identity in `docs/family-tree/mas
 - Deep Charcoal `#1A1A2E`
 - Soft Cream `#F8F4EE`
 - Warm White `#F0EDE8`
+
+The scaffold uses a Next.js canary release because the latest stable line available during setup still resolved a vulnerable transitive PostCSS version in `npm audit`. Revisit this pin when a stable Next.js release includes the patched PostCSS dependency.
