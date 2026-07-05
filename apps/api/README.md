@@ -85,10 +85,36 @@ The initial NestJS scaffold includes:
 - `GET /api/people/:id`
 - `GET /api/media`
 - `GET /api/media/deduplication-candidates`
+- `POST /api/media/immich/import`
 - `GET /api/social/connections`
 - `GET /api/social/provenance`
 
 Initial PostgreSQL migrations live in `migrations/`.
+
+### Immich import proof of concept
+
+`POST /api/media/immich/import` accepts a normalized Immich asset fingerprint:
+
+```json
+{
+  "familyId": "00000000-0000-0000-0000-000000000000",
+  "immichAssetId": "immich-asset-id",
+  "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+  "mediaType": "image",
+  "byteSize": 123456,
+  "storageUri": "immich://asset/immich-asset-id",
+  "originalFilename": "IMG_0001.JPG",
+  "capturedAt": "2026-07-05T00:00:00.000Z"
+}
+```
+
+The service:
+
+1. normalizes and validates the SHA-256 hash,
+2. reuses an existing canonical media asset when the same family already has that hash,
+3. creates a new media instance/provenance row for duplicate uploads,
+4. treats repeated sync of the same Immich asset ID as idempotent,
+5. records an audit event for created or linked imports.
 
 The API uses `@nestjs/platform-fastify` as its runtime adapter. As of this scaffold, `@nestjs/core` still installs `@nestjs/platform-express` transitively, which brings a vulnerable Multer version into `npm audit` even though the application does not use the Express adapter or Multer upload handling. Do not enable Nest Express uploads until the upstream dependency resolves to a patched Multer release or a safe override is verified.
 

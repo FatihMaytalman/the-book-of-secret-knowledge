@@ -2,21 +2,25 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { FamilyEntity } from './family.entity';
 import { UserAccountEntity } from './user-account.entity';
 
 export enum MediaType {
-  PHOTO = 'photo',
+  IMAGE = 'image',
   VIDEO = 'video',
   AUDIO = 'audio',
   DOCUMENT = 'document',
+  OTHER = 'other',
 }
 
 @Entity({ name: 'media_asset' })
+@Unique('UQ_media_asset_family_sha256', ['familyId', 'canonicalSha256'])
 export class MediaAssetEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
@@ -28,7 +32,7 @@ export class MediaAssetEntity {
   @JoinColumn({ name: 'family_id' })
   family!: FamilyEntity;
 
-  @Column({ name: 'canonical_sha256', type: 'text', unique: true })
+  @Column({ name: 'canonical_sha256', type: 'text' })
   canonicalSha256!: string;
 
   @Column({ name: 'media_type', type: 'text' })
@@ -41,6 +45,7 @@ export class MediaAssetEntity {
   storageUri!: string;
 
   @Column({ name: 'immich_asset_id', type: 'text', nullable: true })
+  @Index('IDX_media_asset_immich_asset_id')
   immichAssetId!: string | null;
 
   @Column({ name: 'captured_at', type: 'timestamptz', nullable: true })
@@ -71,6 +76,12 @@ export class MediaInstanceEntity {
 
   @Column({ name: 'source_app', type: 'text' })
   sourceApp!: string;
+
+  @Column({ name: 'source_external_id', type: 'text', nullable: true })
+  sourceExternalId!: string | null;
+
+  @Column({ name: 'imported_from', type: 'text', nullable: true })
+  importedFrom!: string | null;
 
   @Column({ name: 'original_filename', type: 'text' })
   originalFilename!: string;
