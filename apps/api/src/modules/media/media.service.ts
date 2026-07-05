@@ -3,11 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import type { DeduplicationCandidate, MediaAssetSummary } from '@aomlegacy/shared';
 import { Repository } from 'typeorm';
 import {
+  DeduplicationCandidateEntity,
   MediaAssetEntity,
   MediaInstanceEntity,
   MediaType,
 } from '../../database/entities';
 import { AuditService } from '../audit/audit.service';
+import { DedupService } from './dedup.service';
 import { ImportImmichAssetDto } from './dto/import-immich-asset.dto';
 
 export interface ImmichImportResult {
@@ -20,11 +22,14 @@ export interface ImmichImportResult {
 @Injectable()
 export class MediaService {
   constructor(
+    private readonly dedupService: DedupService,
+    private readonly auditService: AuditService,
     @InjectRepository(MediaAssetEntity)
     private readonly mediaAssetRepository: Repository<MediaAssetEntity>,
     @InjectRepository(MediaInstanceEntity)
     private readonly mediaInstanceRepository: Repository<MediaInstanceEntity>,
-    private readonly auditService: AuditService,
+    @InjectRepository(DeduplicationCandidateEntity)
+    private readonly dedupRepository: Repository<DeduplicationCandidateEntity>,
   ) {}
 
   async listMediaAssets(familyId?: string): Promise<MediaAssetSummary[]> {
@@ -35,48 +40,33 @@ export class MediaService {
     });
 
     return Promise.all(
-      assets.map(async (asset) => ({
-        id: asset.id,
-        familyId: asset.familyId,
-        mediaType: this.toSummaryMediaType(asset.mediaType),
-        capturedAt: asset.capturedAt?.toISOString(),
-        canonicalSha256: asset.canonicalSha256,
-        storageUri: asset.storageUri,
-        byteSize: Number(asset.byteSize),
-        provenanceCount: await this.mediaInstanceRepository.count({
+      assets.map(async (asset) => {
+        const provenanceCount = await this.mediaInstanceRepository.count({
           where: { mediaAssetId: asset.id },
-        }),
-      })),
+        });
+        return this.dedupService.toAssetSummary(asset, provenanceCount);
+      }),
     );
   }
 
-  listDeduplicationCandidates(): DeduplicationCandidate[] {
-    return [
-      {
-        candidateMediaAssetId: 'media-whatsapp-copy',
-        existingMediaAssetId: 'media-family-photo',
-        score: 1,
-        decision: 'auto_linked',
-        signals: ['sha256', 'source_filename', 'uploaded_by_family_member'],
-      },
-      {
-        candidateMediaAssetId: 'media-instagram-resize',
-        existingMediaAssetId: 'media-family-photo',
-        score: 0.91,
-        decision: 'needs_review',
-        signals: ['perceptual_hash', 'face_overlap', 'capture_window'],
-      },
-    ];
+  async listDeduplicationCandidates(familyId?: string): Promise<DeduplicationCandidate[]> {
+    const candidates = await this.dedupRepository.find({
+      where: familyId ? { familyId } : {},
+      order: { createdAt: 'DESC' },
+      take: 100,
+    });
+
+    return candidates.map((candidate) => this.dedupService.toCandidateSummary(candidate));
   }
 
   async importImmichAsset(input: ImportImmichAssetDto): Promise<ImmichImportResult> {
     const canonicalSha256 = this.normalizeSha256(input.sha256);
 
     const existingInstance = await this.mediaInstanceRepository.findOne({
-      where: {
-        sourceApp: 'immich',
-        sourceExternalId: input.immichAssetId,
-      },
+      where: [
+        { immichAssetId: input.immichAssetId },
+        { sourceApp: 'immich', sourceExternalId: input.immichAssetId },
+      ],
     });
 
     if (existingInstance) {
@@ -122,6 +112,7 @@ export class MediaService {
       sourceExternalId: input.immichAssetId,
       importedFrom: 'immich',
       originalFilename: input.originalFilename,
+      immichAssetId: input.immichAssetId,
       exif: input.exif ?? null,
     });
     const savedInstance = await this.mediaInstanceRepository.save(mediaInstance);
@@ -152,29 +143,11 @@ export class MediaService {
     const normalized = value.trim().toLowerCase();
 
     if (!/^[a-f0-9]{64}$/.test(normalized)) {
-      throw new BadRequestException('sha256 must be a 64-character lowercase or uppercase hex string');
+      throw new BadRequestException(
+        'sha256 must be a 64-character lowercase or uppercase hex string',
+      );
     }
 
     return normalized;
-  }
-
-  private toSummaryMediaType(mediaType: MediaType): MediaAssetSummary['mediaType'] {
-    if (mediaType === MediaType.IMAGE) {
-      return 'image';
-    }
-
-    if (mediaType === MediaType.VIDEO) {
-      return 'video';
-    }
-
-    if (mediaType === MediaType.AUDIO) {
-      return 'audio';
-    }
-
-    if (mediaType === MediaType.DOCUMENT) {
-      return 'document';
-    }
-
-    return 'other';
   }
 }

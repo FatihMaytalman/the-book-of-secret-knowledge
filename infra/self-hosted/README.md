@@ -72,6 +72,22 @@ docker compose --profile aom-app up -d aom-api aom-web
 
 The web app is available on port `3000` and through nginx at `/login`, `/families`, and `/family/*`.
 
+8. Configure Immich sync for the API:
+
+```bash
+# In .env
+IMMICH_URL=http://immich-server:2283
+IMMICH_API_KEY=<immich-admin-api-key>
+```
+
+Then trigger a sync:
+
+```bash
+curl -X POST http://localhost:8080/api/media/sync/immich \
+  -H 'Content-Type: application/json' \
+  -d '{"familyId":"<family-uuid>"}'
+```
+
 ## Important notes
 
 - This compose file is a Phase 1 baseline, not the final production hosted architecture.

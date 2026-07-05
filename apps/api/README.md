@@ -12,13 +12,16 @@ Implemented in this scaffold:
 - Module boundaries for `Auth`, `Families`, `People`, `Media`, `Audit`, and `Health`.
 - Automatic migration execution on startup.
 - Health endpoint at `GET /api/health`.
+- Immich asset sync proof of concept at `POST /api/media/sync/immich`.
+- Manual Immich import endpoint at `POST /api/media/immich/import`.
+- SHA-256 exact duplicate canonicalization with one canonical asset and many media instances.
+- Database-backed media listing and deduplication candidate endpoints.
 
 Planned next:
 
 - Authentication and family-scoped authorization.
-- Immich asset sync proof of concept.
-- SHA-256 exact duplicate canonicalization.
-- REST endpoints for people and media metadata.
+- Near-duplicate perceptual fingerprint candidates.
+- REST endpoints for people mutations and media review decisions.
 
 ## Local development
 
@@ -61,21 +64,6 @@ This service owns Family Tree's canonical product data:
 
 Immich remains the Phase 1 media upload subsystem. AOM Legacy stores first-party metadata outside Immich so the product stays portable.
 
-## Phase 1 responsibilities
-
-1. Authenticate family members.
-2. Store family/person/media metadata in PostgreSQL.
-3. Sync newly uploaded Immich assets into AOM canonical media tables.
-4. Calculate exact duplicate hashes.
-5. Create one canonical media asset with many upload/source instances.
-6. Emit audit events for sensitive mutations.
-7. Provide REST/GraphQL APIs for the web app.
-8. Prepare module boundaries for future social import, private feed, and publish-out workflows.
-
-## Boundary with Immich
-
-Immich handles media upload, thumbnails, mobile backup, and its own media library workflows. The AOM Legacy API treats Immich as the Phase 1 media subsystem and stores first-party canonical metadata outside Immich so the Family Tree product remains portable.
-
 ## Current scaffold
 
 The initial NestJS scaffold includes:
@@ -85,11 +73,13 @@ The initial NestJS scaffold includes:
 - `GET /api/people/:id`
 - `GET /api/media`
 - `GET /api/media/deduplication-candidates`
+- `GET /api/media/sync/immich/status?familyId=<uuid>`
+- `POST /api/media/sync/immich`
 - `POST /api/media/immich/import`
 - `GET /api/social/connections`
 - `GET /api/social/provenance`
 
-Initial PostgreSQL migrations live in `migrations/`.
+Initial PostgreSQL migrations live in `migrations/` and TypeORM migrations under `src/database/migrations/`.
 
 ### Immich import proof of concept
 
@@ -108,13 +98,16 @@ Initial PostgreSQL migrations live in `migrations/`.
 }
 ```
 
-The service:
+### Immich sync worker
 
-1. normalizes and validates the SHA-256 hash,
-2. reuses an existing canonical media asset when the same family already has that hash,
-3. creates a new media instance/provenance row for duplicate uploads,
-4. treats repeated sync of the same Immich asset ID as idempotent,
-5. records an audit event for created or linked imports.
+`POST /api/media/sync/immich` polls Immich metadata, downloads originals, computes SHA-256, and canonicalizes exact duplicates into one `media_asset` with additional `media_instance` rows.
+
+Configure:
+
+```bash
+IMMICH_URL=http://immich-server:2283
+IMMICH_API_KEY=<immich-admin-api-key>
+```
 
 The API uses `@nestjs/platform-fastify` as its runtime adapter. As of this scaffold, `@nestjs/core` still installs `@nestjs/platform-express` transitively, which brings a vulnerable Multer version into `npm audit` even though the application does not use the Express adapter or Multer upload handling. Do not enable Nest Express uploads until the upstream dependency resolves to a patched Multer release or a safe override is verified.
 

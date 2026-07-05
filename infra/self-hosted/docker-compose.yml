@@ -147,6 +147,8 @@ services:
       AOM_DB_USERNAME: ${AOM_DB_USERNAME:-aomlegacy}
       AOM_DB_PASSWORD: ${AOM_DB_PASSWORD}
       AOM_DB_NAME: ${AOM_DB_NAME:-aomlegacy}
+      IMMICH_URL: ${IMMICH_URL:-http://immich-server:2283}
+      IMMICH_API_KEY: ${IMMICH_API_KEY}
       AOM_JWT_SECRET: ${AOM_JWT_SECRET}
       AOM_SESSION_SECRET: ${AOM_SESSION_SECRET}
     volumes:
@@ -159,6 +161,7 @@ services:
     networks:
       - edge
       - app
+      - media
 
   aom-web:
     image: node:22-alpine

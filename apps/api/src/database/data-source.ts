@@ -2,8 +2,10 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import {
   AuditEventEntity,
+  DeduplicationCandidateEntity,
   FamilyEntity,
   FamilyMembershipEntity,
+  ImmichSyncStateEntity,
   MediaAssetEntity,
   MediaInstanceEntity,
   PersonEntity,
@@ -12,6 +14,7 @@ import {
 } from './entities';
 import { InitialSchema1730000000000 } from './migrations/1730000000000-InitialSchema';
 import { MediaDedupProvenance1730000001000 } from './migrations/1730000001000-MediaDedupProvenance';
+import { ImmichSyncAndDedup1730000002000 } from './migrations/1730000002000-ImmichSyncAndDedup';
 
 export const entities = [
   UserAccountEntity,
@@ -21,12 +24,15 @@ export const entities = [
   PersonNameEntity,
   MediaAssetEntity,
   MediaInstanceEntity,
+  DeduplicationCandidateEntity,
+  ImmichSyncStateEntity,
   AuditEventEntity,
 ];
 
 export const migrations = [
   InitialSchema1730000000000,
   MediaDedupProvenance1730000001000,
+  ImmichSyncAndDedup1730000002000,
 ];
 
 export const AppDataSource = new DataSource({
