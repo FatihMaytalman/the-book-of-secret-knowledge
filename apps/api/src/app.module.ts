@@ -8,6 +8,7 @@ import { FamiliesModule } from './modules/families/families.module';
 import { HealthModule } from './modules/health/health.module';
 import { MediaModule } from './modules/media/media.module';
 import { PeopleModule } from './modules/people/people.module';
+import { SocialModule } from './modules/social/social.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { PeopleModule } from './modules/people/people.module';
     FamiliesModule,
     PeopleModule,
     MediaModule,
+    SocialModule,
     AuditModule,
   ],
 })

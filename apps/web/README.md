@@ -27,6 +27,27 @@ The web app is the primary browser experience for:
 6. Media review queue for exact/near duplicate decisions.
 7. Admin settings for invites, backups, and exports.
 
+## Current scaffold
+
+The initial App Router shell includes:
+
+- `/` - museum-style dashboard and Phase 1 readiness overview.
+- `/people` - starter family profile cards.
+- `/review` - deduplication review concepts.
+- `/social` - Phase 18 social import/feed/publish hub.
+
+The scaffold uses a Next.js canary release because the latest stable line available during setup still resolved a vulnerable transitive PostCSS version in `npm audit`. Revisit this pin when a stable Next.js release includes the patched PostCSS dependency.
+
+## Local commands
+
+From the repository root:
+
+```bash
+npm run dev:web
+npm run typecheck -w apps/web
+npm run build -w apps/web
+```
+
 ## Design foundation
 
 The design system follows the premium heritage identity in `docs/family-tree/master-plan.md`:

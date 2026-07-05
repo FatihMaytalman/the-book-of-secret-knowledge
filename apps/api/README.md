@@ -60,3 +60,44 @@ This service owns Family Tree's canonical product data:
 - and future AI, social, and export workflows.
 
 Immich remains the Phase 1 media upload subsystem. AOM Legacy stores first-party metadata outside Immich so the product stays portable.
+
+## Phase 1 responsibilities
+
+1. Authenticate family members.
+2. Store family/person/media metadata in PostgreSQL.
+3. Sync newly uploaded Immich assets into AOM canonical media tables.
+4. Calculate exact duplicate hashes.
+5. Create one canonical media asset with many upload/source instances.
+6. Emit audit events for sensitive mutations.
+7. Provide REST/GraphQL APIs for the web app.
+8. Prepare module boundaries for future social import, private feed, and publish-out workflows.
+
+## Boundary with Immich
+
+Immich handles media upload, thumbnails, mobile backup, and its own media library workflows. The AOM Legacy API treats Immich as the Phase 1 media subsystem and stores first-party canonical metadata outside Immich so the Family Tree product remains portable.
+
+## Current scaffold
+
+The initial NestJS scaffold includes:
+
+- `GET /api/health`
+- `GET /api/people`
+- `GET /api/people/:id`
+- `GET /api/media`
+- `GET /api/media/deduplication-candidates`
+- `GET /api/social/connections`
+- `GET /api/social/provenance`
+
+Initial PostgreSQL migrations live in `migrations/`.
+
+The API uses `@nestjs/platform-fastify` as its runtime adapter. As of this scaffold, `@nestjs/core` still installs `@nestjs/platform-express` transitively, which brings a vulnerable Multer version into `npm audit` even though the application does not use the Express adapter or Multer upload handling. Do not enable Nest Express uploads until the upstream dependency resolves to a patched Multer release or a safe override is verified.
+
+## Local commands
+
+From the repository root:
+
+```bash
+npm run dev:api
+npm run typecheck -w apps/api
+npm run build -w apps/api
+```
