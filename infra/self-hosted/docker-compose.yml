@@ -131,11 +131,24 @@ services:
 
   aom-api:
     image: node:22-alpine
-    profiles: ["aom-placeholders"]
+    profiles: ["aom-app"]
     working_dir: /workspace/apps/api
-    command: ["sh", "-c", "echo 'AOM API placeholder: scaffold NestJS here' && sleep infinity"]
-    env_file:
-      - .env
+    command:
+      [
+        "sh",
+        "-c",
+        "npm install && npm run build && npm run start:prod",
+      ]
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      AOM_DB_HOST: aom-postgres
+      AOM_DB_PORT: 5432
+      AOM_DB_USERNAME: ${AOM_DB_USERNAME:-aomlegacy}
+      AOM_DB_PASSWORD: ${AOM_DB_PASSWORD}
+      AOM_DB_NAME: ${AOM_DB_NAME:-aomlegacy}
+      AOM_JWT_SECRET: ${AOM_JWT_SECRET}
+      AOM_SESSION_SECRET: ${AOM_SESSION_SECRET}
     volumes:
       - ../../apps/api:/workspace/apps/api
     depends_on:
@@ -143,20 +156,13 @@ services:
         condition: service_healthy
       aom-redis:
         condition: service_started
-      neo4j:
-        condition: service_started
-      qdrant:
-        condition: service_started
-      clamav:
-        condition: service_started
     networks:
       - edge
       - app
-      - media
 
   aom-web:
     image: node:22-alpine
-    profiles: ["aom-placeholders"]
+    profiles: ["aom-app"]
     working_dir: /workspace/apps/web
     command: ["sh", "-c", "echo 'AOM Web placeholder: scaffold Next.js here' && sleep infinity"]
     env_file:

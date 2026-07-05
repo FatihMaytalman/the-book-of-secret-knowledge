@@ -38,7 +38,7 @@ infra/self-hosted/
 | `neo4j` | Family graph relationships |
 | `qdrant` | Vector search and AI retrieval |
 | `clamav` | Upload malware scanning |
-| `aom-api` | Placeholder for future NestJS API |
+| `aom-api` | NestJS API scaffold with PostgreSQL migrations |
 | `aom-web` | Placeholder for future Next.js app |
 
 ## First boot
@@ -58,10 +58,16 @@ docker compose up -d reverse-proxy immich-server immich-machine-learning immich-
 docker compose up -d aom-postgres aom-redis neo4j qdrant clamav
 ```
 
-6. Start placeholder app containers only when useful:
+6. Start the AOM app profile when the API or web scaffold should run:
 
 ```bash
-docker compose --profile aom-placeholders up -d aom-api aom-web
+docker compose --profile aom-app up -d aom-api
+```
+
+7. Start the web placeholder only when useful:
+
+```bash
+docker compose --profile aom-app up -d aom-web
 ```
 
 ## Important notes
