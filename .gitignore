@@ -1,0 +1,32 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Node and package managers
+node_modules/
+.pnpm-store/
+.turbo/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+coverage/
+*.tsbuildinfo
+
+# Local platform state
+.netlify/
+.vercel/
+
+# Self-hosted local data
+infra/self-hosted/data/
+infra/self-hosted/backups/
+infra/self-hosted/logs/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
