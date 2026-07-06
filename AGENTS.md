@@ -21,18 +21,27 @@ it for preview, and checking links (see `.github/CONTRIBUTING.md`).
 
 ### Build / Run (preview the book)
 
-There is no server in the repo. To view the book locally, render `README.md` to HTML and serve it:
+The reproducible build renders `README.md` into a static site with
+`scripts/build_site.py` (requires `markdown` + `pygments`, installed by the update script):
 
 ```bash
-mkdir -p /tmp/book
-python3 -c "import markdown,pathlib; pathlib.Path('/tmp/book/index.html').write_text(markdown.markdown(pathlib.Path('README.md').read_text(), extensions=['extra','toc','tables','fenced_code']))"
-cd /tmp/book && python3 -m http.server 8080   # open http://localhost:8080/
+python3 scripts/build_site.py _site          # writes _site/index.html (+ static/, .nojekyll)
+cd _site && python3 -m http.server 8090       # open http://localhost:8090/
 ```
 
-- Render into `/tmp` (or another out-of-repo path) — do **not** commit generated HTML.
-- Caveat: the offline Python `markdown` renderer does **not** convert GitHub emoji shortcodes
-  (e.g. `:notebook_with_decorative_cover:` shows as literal text). GitHub converts these server-side;
-  this is a preview-only cosmetic difference, not a bug.
+- `_site/` is git-ignored — do **not** commit generated HTML.
+- The build script maps the common GitHub emoji shortcodes used in headings (e.g.
+  `:notebook_with_decorative_cover:` -> 📔) and strips any unmapped `:shortcode:` tokens, since the
+  offline Python `markdown` renderer has no emoji database. When previewing after a rebuild, do a
+  **hard reload** (Ctrl+Shift+R) — the browser aggressively caches `index.html` on a fixed port.
+
+### Deploy
+
+Deployment target is **GitHub Pages** via `.github/workflows/deploy-pages.yml` (build with
+`scripts/build_site.py`, then `actions/upload-pages-artifact` + `actions/deploy-pages`). It needs no
+secrets (uses the built-in `GITHUB_TOKEN`/OIDC). One-time repo setting required:
+**Settings -> Pages -> Source -> "GitHub Actions"**. The older `azure-webapps-node.yml` targets an
+Azure Web App and requires the `AZURE_WEBAPP_PUBLISH_PROFILE` secret + a pre-created Azure app.
 
 ### Broken-link check
 
