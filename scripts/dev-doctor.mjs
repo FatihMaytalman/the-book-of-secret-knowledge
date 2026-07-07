@@ -70,7 +70,10 @@ reportEnv('OLLAMA_HOST', 'optional Ollama host; default is http://127.0.0.1:1143
 reportEnv('OLLAMA_MODEL', 'optional Ollama model override');
 
 console.log('\nRecommended local commands');
-console.log('  npm run lint && npm run test && npm run typecheck && npm run build');
+console.log('  npm run lint');
+console.log('  npm run test');
+console.log('  npm run typecheck');
+console.log('  npm run build');
 console.log('  npm run ai:review:kimi -- --prompt "review the API auth plan"');
 console.log('  npm run ai:review:ollama -- --prompt "review the staged diff"');
 console.log('  npm run docker:selfhost:config');
