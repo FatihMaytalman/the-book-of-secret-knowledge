@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { PersonVisibility } from '@aomlegacy/shared';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/components/providers/auth-provider';
 import { createPerson, fetchPeople } from '@/lib/api';
 
 interface PeopleManagerProps {
@@ -17,6 +18,7 @@ const inputClass =
 
 export function PeopleManager({ familyId }: PeopleManagerProps) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [displayName, setDisplayName] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [deathDate, setDeathDate] = useState('');
@@ -55,6 +57,18 @@ export function PeopleManager({ familyId }: PeopleManagerProps) {
         </p>
       </section>
 
+      {!user ? (
+        <Card>
+          <CardTitle>Sign in to add people</CardTitle>
+          <CardDescription>
+            Adding profiles requires an account.{' '}
+            <Link href="/login" className="text-turquoise-500 hover:underline">
+              Sign in
+            </Link>{' '}
+            to continue. Existing people are shown below.
+          </CardDescription>
+        </Card>
+      ) : (
       <Card>
         <CardTitle>Add a person</CardTitle>
         <CardDescription>New profiles are private to this family by default.</CardDescription>
@@ -119,6 +133,7 @@ export function PeopleManager({ familyId }: PeopleManagerProps) {
           </p>
         ) : null}
       </Card>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2">
         {peopleQuery.isLoading ? <p className="text-warm-white/60">Loading people…</p> : null}

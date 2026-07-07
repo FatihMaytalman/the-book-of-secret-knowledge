@@ -10,10 +10,32 @@ export interface HealthResponse {
   timestamp: string;
 }
 
+export const TOKEN_KEY = 'kinvault.token';
+export const USER_KEY = 'kinvault.user';
+
+export interface AuthUser {
+  userId: string;
+  email: string;
+  displayName: string;
+}
+
+export interface AuthSession {
+  accessToken: string;
+  user: AuthUser;
+}
+
+function authHeader(): Record<string, string> {
+  if (typeof window === 'undefined') {
+    return {};
+  }
+  const token = window.localStorage.getItem(TOKEN_KEY);
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${apiBaseUrl}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
     ...init,
+    headers: { 'Content-Type': 'application/json', ...authHeader(), ...init?.headers },
   });
 
   if (!response.ok) {
@@ -36,6 +58,24 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export async function fetchApiHealth(): Promise<HealthResponse> {
   return request<HealthResponse>('/health');
+}
+
+export async function login(email: string, password: string): Promise<AuthSession> {
+  return request<AuthSession>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+export async function register(
+  email: string,
+  displayName: string,
+  password: string,
+): Promise<AuthSession> {
+  return request<AuthSession>('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ email, displayName, password }),
+  });
 }
 
 export async function fetchFamilies(): Promise<FamilySummary[]> {

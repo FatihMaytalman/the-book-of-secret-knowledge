@@ -5,10 +5,12 @@ import Link from 'next/link';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/components/providers/auth-provider';
 import { createFamily, fetchFamilies } from '@/lib/api';
 
 export function FamiliesManager() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [name, setName] = useState('');
 
   const familiesQuery = useQuery({
@@ -28,6 +30,19 @@ export function FamiliesManager() {
 
   return (
     <div className="mt-10 space-y-8">
+      {!user ? (
+        <Card>
+          <CardTitle>Sign in to create a family</CardTitle>
+          <CardDescription>
+            Creating a workspace requires an account. You can still browse existing families below.
+          </CardDescription>
+          <div className="mt-5">
+            <Link href="/login">
+              <Button>Sign in or create account</Button>
+            </Link>
+          </div>
+        </Card>
+      ) : (
       <Card>
         <CardTitle>Create a family workspace</CardTitle>
         <CardDescription>
@@ -59,6 +74,7 @@ export function FamiliesManager() {
           </p>
         ) : null}
       </Card>
+      )}
 
       <div className="grid gap-4">
         {familiesQuery.isLoading ? (
