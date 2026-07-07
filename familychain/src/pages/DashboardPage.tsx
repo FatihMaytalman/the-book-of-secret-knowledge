@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { listMembers } from '../lib/db';
 import { canDeleteFamily, ROLE_DESCRIPTION } from '../lib/permissions';
+import { exportGedcom } from '../lib/gedcom';
+import { downloadText } from '../lib/backup';
 import { Button, Card, RoleBadge } from '../components/ui';
 
 function Stat({ label, value, hint }: { label: string; value: number | string; hint: string }) {
@@ -51,6 +53,26 @@ export function DashboardPage() {
         <Stat label="People" value={stats.people} hint="Profiles in the tree" />
         <Stat label="Life events" value={stats.events} hint="On the timeline" />
       </div>
+
+      <Card className="stack">
+        <h3 style={{ margin: 0 }}>Export &amp; portability</h3>
+        <p className="muted" style={{ margin: 0, fontSize: '0.85rem' }}>
+          Export this family's people and relationships as a GEDCOM file — the open genealogy
+          standard supported by Ancestry, Gramps, and most family-history tools.
+        </p>
+        <div>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              const family = db.families.find((f) => f.id === familyId);
+              const safe = (family?.name ?? 'family').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+              downloadText(`${safe}.ged`, exportGedcom(db, familyId), 'text/plain');
+            }}
+          >
+            ⬇ Export GEDCOM (.ged)
+          </Button>
+        </div>
+      </Card>
 
       {canDeleteFamily(role) ? (
         <Card className="stack">
