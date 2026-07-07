@@ -1,0 +1,43 @@
+---
+description: Maximise local dev resources (Ollama, Docker, local CLIs); minimise external API usage; British spelling; Windows 11 command discipline
+alwaysApply: true
+---
+
+# Local-first development
+
+This machine has: **Ollama** (local LLMs), **Kimi AI**, **Docker Desktop**, and full developer CLIs (**git**, **node**, **docker**, **wrangler**, **vercel**, **supabase**).
+
+## Priorities
+
+1. **Maximise local resources** — prefer on-machine compute and tooling before cloud or paid APIs.
+2. **Ollama for repetitive generation** — offload tests, boilerplate, docs, and other high-volume but low-risk generation to local Ollama models where quality suffices.
+3. **Docker for all services** — run databases, caches, queues, and backing services in Docker containers via `docker compose`; do not install database engines on the host or substitute mocks when a real containerised service is practical.
+4. **Local verification** — run builds, tests, and lints locally; report **summarised results only** (pass/fail counts, key failures, duration), not full log dumps unless actively debugging.
+5. **Minimise external API tokens** — do heavy analysis, exploration, and drafting locally first; reserve paid or rate-limited APIs for final passes or tasks local models cannot handle.
+
+## Host environment
+
+- **OS:** Windows 11
+- **Terminal:** Enter commands **one at a time** in PowerShell — pasted multi-line snippets concatenate unpredictably.
+- **Spelling:** Use **British English** in all prose (commit messages, PRs, docs, user-facing copy).
+
+## Tool selection
+
+| Task | Prefer |
+|------|--------|
+| Tests, boilerplate, docs drafts | Ollama (`ollama run <model>`) |
+| Postgres, Redis, Immich, etc. | Docker (`docker compose up`) |
+| Deploy previews | `wrangler`, `vercel`, `supabase` CLI locally |
+| Deep reasoning / final review | Kimi AI or primary model sparingly |
+
+## Docker workflow
+
+- Check `infra/**/docker-compose.yml` or project compose files before suggesting host installs.
+- Start services with `docker compose up -d` (one command at a time on Windows).
+- Use `.env.example` patterns; never commit secrets.
+
+## When to escalate beyond local
+
+- Security-sensitive auth or payment flows needing authoritative documentation
+- Tasks where local model output failed validation twice
+- Explicit user request for cloud or paid tooling
