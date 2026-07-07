@@ -1,14 +1,12 @@
 import type { Metadata } from 'next';
-import { fetchApiHealth } from '@/lib/api';
 import { FamilyDashboard } from '@/components/dashboard/family-dashboard';
+import { fetchApiHealth } from '@/lib/api';
 
 interface FamilyDashboardPageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: FamilyDashboardPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: FamilyDashboardPageProps): Promise<Metadata> {
   const { id } = await params;
   return {
     title: `Dashboard · ${id}`,
@@ -26,8 +24,7 @@ export default async function FamilyDashboardPage({ params }: FamilyDashboardPag
     apiStatus = 'offline';
   }
 
-  const familyName =
-    id === 'maytalman' ? 'Maytalman Family Archive' : 'Demo Family Workspace';
+  const familyName = id === 'maytalman' ? 'Maytalman Family Archive' : 'Demo Family Workspace';
 
   return <FamilyDashboard familyName={familyName} apiStatus={apiStatus} />;
 }

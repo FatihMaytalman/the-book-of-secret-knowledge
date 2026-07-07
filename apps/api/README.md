@@ -79,6 +79,10 @@ The initial NestJS scaffold includes:
 - `GET /api/social/connections`
 - `GET /api/social/provenance`
 
+OpenAPI documentation is exposed at:
+
+- `GET /api/docs`
+
 Initial PostgreSQL migrations live in `migrations/` and TypeORM migrations under `src/database/migrations/`.
 
 ### Immich import proof of concept
@@ -109,7 +113,7 @@ IMMICH_URL=http://immich-server:2283
 IMMICH_API_KEY=<immich-admin-api-key>
 ```
 
-The API uses `@nestjs/platform-fastify` as its runtime adapter. As of this scaffold, `@nestjs/core` still installs `@nestjs/platform-express` transitively, which brings a vulnerable Multer version into `npm audit` even though the application does not use the Express adapter or Multer upload handling. Do not enable Nest Express uploads until the upstream dependency resolves to a patched Multer release or a safe override is verified.
+The API uses `@nestjs/platform-fastify` as its runtime adapter. As of this scaffold, `@nestjs/core` still installs `@nestjs/platform-express` transitively, which brings a vulnerable Multer version into `npm audit` through Nest packages such as `@nestjs/typeorm` and `@nestjs/swagger` even though the application does not use the Express adapter or Multer upload handling. Do not enable Nest Express uploads until the upstream dependency resolves to a patched Multer release or a safe override is verified.
 
 ## Local commands
 

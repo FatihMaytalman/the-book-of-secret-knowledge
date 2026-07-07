@@ -1,6 +1,6 @@
 import { strict as assert } from 'node:assert';
-import { describe, it } from 'node:test';
 import { createHash } from 'node:crypto';
+import { describe, it } from 'node:test';
 
 import { sha256Hex } from './hash.util';
 

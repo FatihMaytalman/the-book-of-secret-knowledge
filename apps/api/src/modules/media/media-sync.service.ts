@@ -1,12 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import type { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { AuditService } from '../audit/audit.service';
+import type { Repository } from 'typeorm';
 import { FamilyEntity, ImmichSyncStateEntity, MediaInstanceEntity } from '../../database/entities';
-import { DedupService } from './dedup.service';
+import type { AuditService } from '../audit/audit.service';
+import type { DedupService } from './dedup.service';
 import { sha256Hex } from './hash.util';
-import { ImmichClient, ImmichClientError, type ImmichAsset } from './immich.client';
+import { type ImmichAsset, ImmichClient, ImmichClientError } from './immich.client';
 
 export interface ImmichSyncSummary {
   familyId: string;
@@ -62,9 +62,7 @@ export class MediaSyncService {
 
     const syncState =
       (await this.syncStateRepository.findOne({ where: { familyId } })) ??
-      (await this.syncStateRepository.save(
-        this.syncStateRepository.create({ familyId }),
-      ));
+      (await this.syncStateRepository.save(this.syncStateRepository.create({ familyId })));
 
     const searchResult = await this.immichClient.searchAssets(
       syncState.lastImmichUpdatedAt ?? undefined,

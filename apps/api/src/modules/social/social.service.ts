@@ -1,5 +1,5 @@
+import type { SocialProvenanceSummary, SocialProvider } from '@aomlegacy/shared';
 import { Injectable } from '@nestjs/common';
-import type { SocialProvider, SocialProvenanceSummary } from '@aomlegacy/shared';
 
 export interface SocialConnectionSummary {
   provider: SocialProvider;

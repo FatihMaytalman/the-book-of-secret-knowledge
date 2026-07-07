@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils';
 import type { ButtonHTMLAttributes } from 'react';
+import { cn } from '@/lib/utils';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 
@@ -8,19 +8,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary:
-    'bg-gold-500 text-navy-950 hover:bg-gold-500/90 focus-visible:ring-gold-500/60',
+  primary: 'bg-gold-500 text-navy-950 hover:bg-gold-500/90 focus-visible:ring-gold-500/60',
   secondary:
     'border border-white/15 bg-white/5 text-warm-white hover:bg-white/10 focus-visible:ring-white/20',
   ghost: 'text-warm-white/80 hover:bg-white/5 hover:text-warm-white focus-visible:ring-white/20',
 };
 
-export function Button({
-  className,
-  variant = 'primary',
-  type = 'button',
-  ...props
-}: ButtonProps) {
+export function Button({ className, variant = 'primary', type = 'button', ...props }: ButtonProps) {
   return (
     <button
       type={type}

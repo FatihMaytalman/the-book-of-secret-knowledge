@@ -5,9 +5,8 @@ import { describe, it } from 'node:test';
 import type { Repository } from 'typeorm';
 
 import {
-  DeduplicationCandidateEntity,
-  MediaAssetEntity,
-  MediaInstanceEntity,
+  type MediaAssetEntity,
+  type MediaInstanceEntity,
   MediaType,
 } from '../../database/entities';
 import { DedupService } from './dedup.service';
@@ -144,12 +143,9 @@ function createService(
   assetRepository: InMemoryRepository<MediaAssetEntity>,
   instanceRepository: InMemoryRepository<MediaInstanceEntity>,
 ): DedupService {
-  const dedupRepository = new InMemoryRepository<DeduplicationCandidateEntity>();
-
   return new DedupService(
     assetRepository as unknown as Repository<MediaAssetEntity>,
     instanceRepository as unknown as Repository<MediaInstanceEntity>,
-    dedupRepository as unknown as Repository<DeduplicationCandidateEntity>,
   );
 }
 

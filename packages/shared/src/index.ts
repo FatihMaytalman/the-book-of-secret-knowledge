@@ -1,30 +1,30 @@
-export type FamilyRole = "owner" | "admin" | "archivist" | "contributor" | "viewer" | "guest";
+export type FamilyRole = 'owner' | 'admin' | 'archivist' | 'contributor' | 'viewer' | 'guest';
 
-export type PersonVisibility = "family" | "restricted" | "private";
+export type PersonVisibility = 'family' | 'restricted' | 'private';
 
 export type RelationshipKind =
-  | "biological_parent"
-  | "adoptive_parent"
-  | "foster_parent"
-  | "step_parent"
-  | "guardian"
-  | "spouse"
-  | "partner";
+  | 'biological_parent'
+  | 'adoptive_parent'
+  | 'foster_parent'
+  | 'step_parent'
+  | 'guardian'
+  | 'spouse'
+  | 'partner';
 
-export type MediaType = "image" | "video" | "audio" | "document" | "other";
+export type MediaType = 'image' | 'video' | 'audio' | 'document' | 'other';
 
-export type DeduplicationDecision = "auto_linked" | "needs_review" | "distinct" | "rejected";
+export type DeduplicationDecision = 'auto_linked' | 'needs_review' | 'distinct' | 'rejected';
 
 export type SocialProvider =
-  | "facebook"
-  | "instagram"
-  | "whatsapp"
-  | "icloud"
-  | "google_photos"
-  | "youtube"
-  | "tiktok"
-  | "linkedin"
-  | "manual_export";
+  | 'facebook'
+  | 'instagram'
+  | 'whatsapp'
+  | 'icloud'
+  | 'google_photos'
+  | 'youtube'
+  | 'tiktok'
+  | 'linkedin'
+  | 'manual_export';
 
 export interface FamilySummary {
   id: string;

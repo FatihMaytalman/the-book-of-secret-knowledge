@@ -1,6 +1,6 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 
-import { PeopleService } from './people.service';
+import type { PeopleService } from './people.service';
 
 @Controller('people')
 export class PeopleController {
@@ -12,7 +12,7 @@ export class PeopleController {
   }
 
   @Get(':id')
-  getPerson(@Param("id") id: string) {
+  getPerson(@Param('id') id: string) {
     const person = this.peopleService.getPerson(id);
 
     if (!person) {

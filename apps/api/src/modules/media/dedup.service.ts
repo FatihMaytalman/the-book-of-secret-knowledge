@@ -1,10 +1,9 @@
+import type { DeduplicationCandidate, MediaAssetSummary } from '@aomlegacy/shared';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import type { DeduplicationCandidate, MediaAssetSummary } from '@aomlegacy/shared';
+import type { Repository } from 'typeorm';
 import {
-  DeduplicationCandidateEntity,
-  DeduplicationDecision,
+  type DeduplicationCandidateEntity,
   MediaAssetEntity,
   MediaInstanceEntity,
   MediaType,
@@ -32,8 +31,6 @@ export class DedupService {
     private readonly mediaAssetRepository: Repository<MediaAssetEntity>,
     @InjectRepository(MediaInstanceEntity)
     private readonly mediaInstanceRepository: Repository<MediaInstanceEntity>,
-    @InjectRepository(DeduplicationCandidateEntity)
-    private readonly dedupRepository: Repository<DeduplicationCandidateEntity>,
   ) {}
 
   async canonicalizeImmichAsset(

@@ -1,7 +1,7 @@
 import {
   IsIn,
-  IsISO8601,
   IsInt,
+  IsISO8601,
   IsObject,
   IsOptional,
   IsString,

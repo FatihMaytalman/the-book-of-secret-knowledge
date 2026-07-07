@@ -6,10 +6,7 @@ import { PeopleController } from './people.controller';
 import { PeopleService } from './people.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([PersonEntity, PersonNameEntity]),
-    AuditModule,
-  ],
+  imports: [TypeOrmModule.forFeature([PersonEntity, PersonNameEntity]), AuditModule],
   controllers: [PeopleController],
   providers: [PeopleService],
   exports: [TypeOrmModule, AuditModule, PeopleService],

@@ -47,7 +47,9 @@ export function FamilyDashboard({ familyName, apiStatus = 'unknown' }: FamilyDas
   return (
     <div className="space-y-8">
       <section>
-        <p className="text-sm uppercase tracking-[0.24em] text-gold-500">Today in your family&apos;s story</p>
+        <p className="text-sm uppercase tracking-[0.24em] text-gold-500">
+          Today in your family&apos;s story
+        </p>
         <h2 className="mt-2 max-w-3xl font-display text-4xl text-balance text-cream-50">
           Welcome back to {familyName}
         </h2>

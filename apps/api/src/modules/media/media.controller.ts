@@ -9,11 +9,11 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { IsOptional, IsUUID } from 'class-validator';
-import { ImportImmichAssetDto } from './dto/import-immich-asset.dto';
-import { SyncImmichAssetsDto } from './dto/sync-immich-assets.dto';
+import type { ImportImmichAssetDto } from './dto/import-immich-asset.dto';
+import type { SyncImmichAssetsDto } from './dto/sync-immich-assets.dto';
 import { ImmichClientError } from './immich.client';
-import { MediaService } from './media.service';
-import { MediaSyncService } from './media-sync.service';
+import type { MediaService } from './media.service';
+import type { MediaSyncService } from './media-sync.service';
 
 class FamilyScopeQuery {
   @IsOptional()

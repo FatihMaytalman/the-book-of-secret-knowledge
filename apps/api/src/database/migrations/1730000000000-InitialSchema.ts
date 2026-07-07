@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class InitialSchema1730000000000 implements MigrationInterface {
   name = 'InitialSchema1730000000000';
@@ -119,15 +119,31 @@ export class InitialSchema1730000000000 implements MigrationInterface {
       )
     `);
 
-    await queryRunner.query(`CREATE INDEX "IDX_family_membership_family_id" ON "family_membership" ("family_id")`);
-    await queryRunner.query(`CREATE INDEX "IDX_family_membership_user_id" ON "family_membership" ("user_id")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_family_membership_family_id" ON "family_membership" ("family_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_family_membership_user_id" ON "family_membership" ("user_id")`,
+    );
     await queryRunner.query(`CREATE INDEX "IDX_person_family_id" ON "person" ("family_id")`);
-    await queryRunner.query(`CREATE INDEX "IDX_person_name_person_id" ON "person_name" ("person_id")`);
-    await queryRunner.query(`CREATE INDEX "IDX_media_asset_family_id" ON "media_asset" ("family_id")`);
-    await queryRunner.query(`CREATE INDEX "IDX_media_asset_immich_asset_id" ON "media_asset" ("immich_asset_id")`);
-    await queryRunner.query(`CREATE INDEX "IDX_media_instance_media_asset_id" ON "media_instance" ("media_asset_id")`);
-    await queryRunner.query(`CREATE INDEX "IDX_audit_event_family_id" ON "audit_event" ("family_id")`);
-    await queryRunner.query(`CREATE INDEX "IDX_audit_event_created_at" ON "audit_event" ("created_at")`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_person_name_person_id" ON "person_name" ("person_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_media_asset_family_id" ON "media_asset" ("family_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_media_asset_immich_asset_id" ON "media_asset" ("immich_asset_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_media_instance_media_asset_id" ON "media_instance" ("media_asset_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_audit_event_family_id" ON "audit_event" ("family_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_audit_event_created_at" ON "audit_event" ("created_at")`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

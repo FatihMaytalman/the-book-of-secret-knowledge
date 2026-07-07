@@ -10,7 +10,8 @@
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
+    "lint": "biome check apps packages --files-ignore-unknown=true",
+    "format": "biome check --write apps packages --files-ignore-unknown=true",
     "test": "npm run test --workspaces --if-present",
     "dev:api": "npm run dev -w apps/api",
     "dev:web": "npm run dev -w apps/web"
@@ -19,6 +20,7 @@
     "node": ">=22"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.2",
     "@types/node": "^26.1.0",
     "tsx": "^4.23.0",
     "typescript": "^6.0.3"

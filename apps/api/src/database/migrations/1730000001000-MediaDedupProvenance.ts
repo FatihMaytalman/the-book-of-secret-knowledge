@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class MediaDedupProvenance1730000001000 implements MigrationInterface {
   name = 'MediaDedupProvenance1730000001000';
@@ -33,7 +33,9 @@ export class MediaDedupProvenance1730000001000 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_media_instance_source"`);
     await queryRunner.query(`ALTER TABLE "media_instance" DROP COLUMN IF EXISTS "imported_from"`);
-    await queryRunner.query(`ALTER TABLE "media_instance" DROP COLUMN IF EXISTS "source_external_id"`);
+    await queryRunner.query(
+      `ALTER TABLE "media_instance" DROP COLUMN IF EXISTS "source_external_id"`,
+    );
     await queryRunner.query(`
       ALTER TABLE "media_asset"
       DROP CONSTRAINT IF EXISTS "UQ_media_asset_family_sha256"

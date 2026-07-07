@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class ImmichSyncAndDedup1730000002000 implements MigrationInterface {
   name = 'ImmichSyncAndDedup1730000002000';

@@ -1,16 +1,16 @@
+import type { DeduplicationCandidate, MediaAssetSummary } from '@aomlegacy/shared';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import type { DeduplicationCandidate, MediaAssetSummary } from '@aomlegacy/shared';
-import { Repository } from 'typeorm';
+import type { Repository } from 'typeorm';
 import {
   DeduplicationCandidateEntity,
   MediaAssetEntity,
   MediaInstanceEntity,
-  MediaType,
+  type MediaType,
 } from '../../database/entities';
-import { AuditService } from '../audit/audit.service';
-import { DedupService } from './dedup.service';
-import { ImportImmichAssetDto } from './dto/import-immich-asset.dto';
+import type { AuditService } from '../audit/audit.service';
+import type { DedupService } from './dedup.service';
+import type { ImportImmichAssetDto } from './dto/import-immich-asset.dto';
 
 export interface ImmichImportResult {
   mediaAssetId: string;

@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import type { PersonSummary } from '@aomlegacy/shared';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class PeopleService {
