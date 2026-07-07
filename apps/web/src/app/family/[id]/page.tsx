@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { fetchApiHealth } from '@/lib/api';
+import { fetchApiHealth, fetchFamily, fetchPeople } from '@/lib/api';
 import { FamilyDashboard } from '@/components/dashboard/family-dashboard';
 
 interface FamilyDashboardPageProps {
@@ -10,24 +10,31 @@ export async function generateMetadata({
   params,
 }: FamilyDashboardPageProps): Promise<Metadata> {
   const { id } = await params;
-  return {
-    title: `Dashboard · ${id}`,
-  };
+  try {
+    const family = await fetchFamily(id);
+    return { title: `${family.name} · Dashboard` };
+  } catch {
+    return { title: 'Dashboard' };
+  }
 }
 
 export default async function FamilyDashboardPage({ params }: FamilyDashboardPageProps) {
   const { id } = await params;
 
-  let apiStatus = 'offline';
-  try {
-    const health = await fetchApiHealth();
-    apiStatus = health.status;
-  } catch {
-    apiStatus = 'offline';
-  }
+  const [family, people, apiStatus] = await Promise.all([
+    fetchFamily(id),
+    fetchPeople(id).catch(() => []),
+    fetchApiHealth()
+      .then((health) => health.status)
+      .catch(() => 'offline'),
+  ]);
 
-  const familyName =
-    id === 'maytalman' ? 'Maytalman Family Archive' : 'Demo Family Workspace';
-
-  return <FamilyDashboard familyName={familyName} apiStatus={apiStatus} />;
+  return (
+    <FamilyDashboard
+      familyName={family.name}
+      apiStatus={apiStatus}
+      peopleCount={people.length}
+      mediaAssetCount={family.mediaAssetCount}
+    />
+  );
 }

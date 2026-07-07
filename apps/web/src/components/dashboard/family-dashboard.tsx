@@ -41,9 +41,16 @@ function DashboardSection({ title, description, items }: DashboardSectionProps) 
 interface FamilyDashboardProps {
   familyName: string;
   apiStatus?: string;
+  peopleCount?: number;
+  mediaAssetCount?: number;
 }
 
-export function FamilyDashboard({ familyName, apiStatus = 'unknown' }: FamilyDashboardProps) {
+export function FamilyDashboard({
+  familyName,
+  apiStatus = 'unknown',
+  peopleCount = 0,
+  mediaAssetCount = 0,
+}: FamilyDashboardProps) {
   return (
     <div className="space-y-8">
       <section>
@@ -58,8 +65,12 @@ export function FamilyDashboard({ familyName, apiStatus = 'unknown' }: FamilyDas
       </section>
 
       <section className="grid gap-4 md:grid-cols-3">
-        <DashboardStat label="Recent uploads" value="12" hint="Last 7 days" />
-        <DashboardStat label="Review queue" value="4" hint="Needs attention" />
+        <DashboardStat label="People" value={String(peopleCount)} hint="Profiles in this family" />
+        <DashboardStat
+          label="Media assets"
+          value={String(mediaAssetCount)}
+          hint="Canonical memories"
+        />
         <DashboardStat label="API status" value={apiStatus} hint="Backend health" />
       </section>
 
