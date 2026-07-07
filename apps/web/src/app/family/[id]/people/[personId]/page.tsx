@@ -1,17 +1,26 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { cookies } from 'next/headers';
+import { notFound, redirect } from 'next/navigation';
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
-import { fetchPerson } from '@/lib/api';
+import { fetchPerson, TOKEN_KEY } from '@/lib/api';
 
 interface PersonPageProps {
   params: Promise<{ id: string; personId: string }>;
 }
 
+async function getToken(): Promise<string | undefined> {
+  return (await cookies()).get(TOKEN_KEY)?.value;
+}
+
 export async function generateMetadata({ params }: PersonPageProps): Promise<Metadata> {
   const { personId } = await params;
+  const token = await getToken();
+  if (!token) {
+    return { title: 'Person' };
+  }
   try {
-    const person = await fetchPerson(personId);
+    const person = await fetchPerson(personId, token);
     return { title: person.displayName };
   } catch {
     return { title: 'Person' };
@@ -20,10 +29,15 @@ export async function generateMetadata({ params }: PersonPageProps): Promise<Met
 
 export default async function PersonPage({ params }: PersonPageProps) {
   const { id, personId } = await params;
+  const token = await getToken();
+
+  if (!token) {
+    redirect('/login');
+  }
 
   let person;
   try {
-    person = await fetchPerson(personId);
+    person = await fetchPerson(personId, token);
   } catch {
     notFound();
   }

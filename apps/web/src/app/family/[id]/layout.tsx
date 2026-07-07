@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
-import { notFound } from 'next/navigation';
+import { cookies } from 'next/headers';
+import { notFound, redirect } from 'next/navigation';
 import { AppShell } from '@/components/layout/app-shell';
-import { fetchFamily } from '@/lib/api';
+import { fetchFamily, TOKEN_KEY } from '@/lib/api';
 
 interface FamilyLayoutProps {
   children: ReactNode;
@@ -10,10 +11,15 @@ interface FamilyLayoutProps {
 
 export default async function FamilyLayout({ children, params }: FamilyLayoutProps) {
   const { id } = await params;
+  const token = (await cookies()).get(TOKEN_KEY)?.value;
+
+  if (!token) {
+    redirect('/login');
+  }
 
   let familyName: string;
   try {
-    const family = await fetchFamily(id);
+    const family = await fetchFamily(id, token);
     familyName = family.name;
   } catch {
     notFound();

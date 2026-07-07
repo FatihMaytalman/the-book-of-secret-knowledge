@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import type { PersonSummary, PersonVisibility } from '@aomlegacy/shared';
 import {
   FamilyEntity,
+  FamilyMembershipEntity,
   PersonEntity,
   PersonNameEntity,
   PersonVisibility as EntityVisibility,
@@ -20,12 +25,25 @@ export class PeopleService {
     private readonly personNameRepository: Repository<PersonNameEntity>,
     @InjectRepository(FamilyEntity)
     private readonly familyRepository: Repository<FamilyEntity>,
+    @InjectRepository(FamilyMembershipEntity)
+    private readonly membershipRepository: Repository<FamilyMembershipEntity>,
     private readonly auditService: AuditService,
   ) {}
 
-  async listPeople(familyId?: string): Promise<PersonSummary[]> {
+  private async assertMembership(familyId: string, userId: string): Promise<void> {
+    const isMember = await this.membershipRepository.exists({
+      where: { familyId, userId },
+    });
+    if (!isMember) {
+      throw new ForbiddenException('You are not a member of this family.');
+    }
+  }
+
+  async listPeople(familyId: string, userId: string): Promise<PersonSummary[]> {
+    await this.assertMembership(familyId, userId);
+
     const people = await this.personRepository.find({
-      where: familyId ? { familyId } : {},
+      where: { familyId },
       order: { createdAt: 'ASC' },
     });
 
@@ -40,12 +58,14 @@ export class PeopleService {
     );
   }
 
-  async getPerson(id: string): Promise<PersonSummary> {
+  async getPerson(id: string, userId: string): Promise<PersonSummary> {
     const person = await this.personRepository.findOne({ where: { id } });
 
     if (!person) {
       throw new NotFoundException(`Person not found: ${id}`);
     }
+
+    await this.assertMembership(person.familyId, userId);
 
     const primaryNames = await this.loadPrimaryNames([person.id]);
 
@@ -63,6 +83,8 @@ export class PeopleService {
     if (!familyExists) {
       throw new NotFoundException(`Family not found: ${dto.familyId}`);
     }
+
+    await this.assertMembership(dto.familyId, actorUserId);
 
     const displayName = dto.displayName.trim();
 
@@ -94,7 +116,7 @@ export class PeopleService {
       metadata: { displayName },
     });
 
-    return this.getPerson(person.id);
+    return this.getPerson(person.id, actorUserId);
   }
 
   private async loadPrimaryNames(

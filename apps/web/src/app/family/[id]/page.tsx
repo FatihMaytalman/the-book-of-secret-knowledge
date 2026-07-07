@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
-import { fetchApiHealth, fetchFamily, fetchPeople } from '@/lib/api';
+import { cookies } from 'next/headers';
+import { notFound, redirect } from 'next/navigation';
+import { fetchApiHealth, fetchFamily, fetchPeople, TOKEN_KEY } from '@/lib/api';
 import { FamilyDashboard } from '@/components/dashboard/family-dashboard';
+
+async function getToken(): Promise<string | undefined> {
+  return (await cookies()).get(TOKEN_KEY)?.value;
+}
 
 interface FamilyDashboardPageProps {
   params: Promise<{ id: string }>;
@@ -10,8 +16,12 @@ export async function generateMetadata({
   params,
 }: FamilyDashboardPageProps): Promise<Metadata> {
   const { id } = await params;
+  const token = await getToken();
+  if (!token) {
+    return { title: 'Dashboard' };
+  }
   try {
-    const family = await fetchFamily(id);
+    const family = await fetchFamily(id, token);
     return { title: `${family.name} · Dashboard` };
   } catch {
     return { title: 'Dashboard' };
@@ -20,10 +30,21 @@ export async function generateMetadata({
 
 export default async function FamilyDashboardPage({ params }: FamilyDashboardPageProps) {
   const { id } = await params;
+  const token = await getToken();
 
-  const [family, people, apiStatus] = await Promise.all([
-    fetchFamily(id),
-    fetchPeople(id).catch(() => []),
+  if (!token) {
+    redirect('/login');
+  }
+
+  let family;
+  try {
+    family = await fetchFamily(id, token);
+  } catch {
+    notFound();
+  }
+
+  const [people, apiStatus] = await Promise.all([
+    fetchPeople(id, token).catch(() => []),
     fetchApiHealth()
       .then((health) => health.status)
       .catch(() => 'offline'),

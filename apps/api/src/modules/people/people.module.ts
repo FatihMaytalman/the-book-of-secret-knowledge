@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   FamilyEntity,
+  FamilyMembershipEntity,
   PersonEntity,
   PersonNameEntity,
 } from '../../database/entities';
@@ -12,7 +13,12 @@ import { PeopleService } from './people.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PersonEntity, PersonNameEntity, FamilyEntity]),
+    TypeOrmModule.forFeature([
+      PersonEntity,
+      PersonNameEntity,
+      FamilyEntity,
+      FamilyMembershipEntity,
+    ]),
     AuditModule,
     AuthModule,
   ],

@@ -25,8 +25,9 @@ export class FamiliesController {
   }
 
   @Get(':id')
-  getFamily(@Param('id') id: string) {
-    return this.familiesService.getFamily(id);
+  @UseGuards(JwtAuthGuard)
+  getFamily(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.familiesService.getFamily(id, user.userId);
   }
 
   @Post()

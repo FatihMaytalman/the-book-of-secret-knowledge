@@ -32,10 +32,15 @@ function authHeader(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function request<T>(
+  path: string,
+  init?: RequestInit,
+  token?: string,
+): Promise<T> {
+  const bearer = token ? { Authorization: `Bearer ${token}` } : authHeader();
   const response = await fetch(`${apiBaseUrl}${path}`, {
     ...init,
-    headers: { 'Content-Type': 'application/json', ...authHeader(), ...init?.headers },
+    headers: { 'Content-Type': 'application/json', ...bearer, ...init?.headers },
   });
 
   if (!response.ok) {
@@ -82,8 +87,8 @@ export async function fetchFamilies(): Promise<FamilySummary[]> {
   return request<FamilySummary[]>('/families', { cache: 'no-store' });
 }
 
-export async function fetchFamily(id: string): Promise<FamilySummary> {
-  return request<FamilySummary>(`/families/${id}`, { cache: 'no-store' });
+export async function fetchFamily(id: string, token?: string): Promise<FamilySummary> {
+  return request<FamilySummary>(`/families/${id}`, { cache: 'no-store' }, token);
 }
 
 export async function createFamily(name: string): Promise<FamilySummary> {
@@ -93,15 +98,19 @@ export async function createFamily(name: string): Promise<FamilySummary> {
   });
 }
 
-export async function fetchPeople(familyId: string): Promise<PersonSummary[]> {
+export async function fetchPeople(
+  familyId: string,
+  token?: string,
+): Promise<PersonSummary[]> {
   return request<PersonSummary[]>(
     `/people?familyId=${encodeURIComponent(familyId)}`,
     { cache: 'no-store' },
+    token,
   );
 }
 
-export async function fetchPerson(id: string): Promise<PersonSummary> {
-  return request<PersonSummary>(`/people/${id}`, { cache: 'no-store' });
+export async function fetchPerson(id: string, token?: string): Promise<PersonSummary> {
+  return request<PersonSummary>(`/people/${id}`, { cache: 'no-store' }, token);
 }
 
 export interface CreatePersonInput {

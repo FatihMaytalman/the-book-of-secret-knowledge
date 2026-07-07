@@ -42,7 +42,16 @@ export class FamiliesService {
     return Promise.all(families.map((family) => this.toSummary(family)));
   }
 
-  async getFamily(id: string): Promise<FamilySummary> {
+  async getFamily(id: string, userId: string): Promise<FamilySummary> {
+    const isMember = await this.membershipRepository.exists({
+      where: { familyId: id, userId },
+    });
+
+    // Do not leak existence of families the user cannot access.
+    if (!isMember) {
+      throw new NotFoundException(`Family not found: ${id}`);
+    }
+
     const family = await this.familyRepository.findOne({ where: { id } });
 
     if (!family) {
