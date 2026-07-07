@@ -2,52 +2,45 @@
 
 ## Cursor Cloud specific instructions
 
-The root of this repository is the **"awesome list" book**: a single large `README.md` (~210 KB)
-plus a preview image in `static/img`. The notes below cover working with and deploying that book.
+**Kinvault** (an **AOM Legacy** platform) is a monorepo for a private, self-hosted-first family
+digital-legacy platform. Product/marketing name: **Kinvault**. Company/brand and technical
+namespace: **AOM Legacy** (npm scope `@aomlegacy/*`, DB defaults/env `AOM_*`). Do not rename the
+`@aomlegacy/*` scope or `AOM_*` env vars — they are used pervasively across imports, `package-lock`
+files, and DB config.
 
-> Note: the repo has since grown into a monorepo — `master` also contains a separate NestJS
-> application under `apps/` (with its own `package.json`, migrations, and `docs/`/`infra/`). That
-> application has its **own** setup/build/test and is **out of scope** for these book/deploy notes;
-> set it up from `apps/api/README.md` when working on it. The root `README.md` remains the book, and
-> the Pages deploy below publishes that book.
+> Historical note: this repo began as a fork of an unrelated Markdown "awesome list"
+> (`the-book-of-secret-knowledge`). All of that book content has been replaced — the root
+> `README.md` now describes Kinvault. There is **no static "book" to render/deploy**; the product is
+> the application under `apps/`.
 
-For the book, the "development environment" centers on editing/reviewing Markdown, linting it,
-rendering it for preview, and checking links (see `.github/CONTRIBUTING.md`).
+### Layout
 
-### Lint
+- `apps/api` — NestJS + TypeScript API (Fastify adapter), TypeORM + PostgreSQL. Owns canonical data:
+  families, people, media assets, dedup decisions, audit, social. Listens on `:3001`.
+- `apps/web` — Next.js (App Router) + React + Tailwind v4 + TanStack Query. Listens on `:3000`.
+- `apps/mobile` — planned React Native/Expo app (README only for now).
+- `packages/shared` — shared TS domain contracts, imported as `@aomlegacy/shared`.
+- `infra/self-hosted` — Docker Compose home-server stack (Immich, Postgres, Tailscale) + runbooks.
+- `docs/family-tree` — product/architecture master plan.
 
-- Markdown linter is installed by the update script into `~/.local/mdtools`.
-- Run: `~/.local/mdtools/node_modules/.bin/markdownlint README.md`
-- The repo has **no `markdownlint` config**, so the default ruleset reports thousands of findings
-  (mostly `MD033` inline-HTML and `MD013` line-length). This is expected — the list is intentionally
-  HTML-heavy — and does not indicate a broken environment. Do not "fix" these en masse.
+### Build / run / test / lint
 
-### Build / Run (preview the book)
+Node **>= 22**. Standard commands are already documented — prefer these sources over duplicating:
 
-The reproducible build renders `README.md` into a static site with
-`scripts/build_site.py` (requires `markdown` + `pygments`, installed by the update script):
+- Root workspace scripts (see root `package.json`): `npm install`, `npm run build`,
+  `npm run typecheck`, `npm run lint` (all run per-workspace with `--if-present`), plus
+  `npm run dev:api` and `npm run dev:web`.
+- Per-app setup, env vars, and endpoints: `apps/api/README.md` and `apps/web/README.md`.
+- Self-hosted/Docker stack: `infra/self-hosted/README.md`.
 
-```bash
-python3 scripts/build_site.py _site          # writes _site/index.html (+ static/, .nojekyll)
-cd _site && python3 -m http.server 8090       # open http://localhost:8090/
-```
+### Non-obvious caveats
 
-- `_site/` is git-ignored — do **not** commit generated HTML.
-- The build script maps the common GitHub emoji shortcodes used in headings (e.g.
-  `:notebook_with_decorative_cover:` -> 📔) and strips any unmapped `:shortcode:` tokens, since the
-  offline Python `markdown` renderer has no emoji database. When previewing after a rebuild, do a
-  **hard reload** (Ctrl+Shift+R) — the browser aggressively caches `index.html` on a fixed port.
-
-### Deploy
-
-Deployment target is **GitHub Pages** via `.github/workflows/deploy-pages.yml` (build with
-`scripts/build_site.py`, then `actions/upload-pages-artifact` + `actions/deploy-pages`). It needs no
-secrets (uses the built-in `GITHUB_TOKEN`/OIDC). One-time repo setting required:
-**Settings -> Pages -> Source -> "GitHub Actions"**. The older `azure-webapps-node.yml` targets an
-Azure Web App and requires the `AZURE_WEBAPP_PUBLISH_PROFILE` secret + a pre-created Azure app.
-
-### Broken-link check
-
-`.github/CONTRIBUTING.md` documents the canonical link checker (a `curl`-based shell loop over
-`href="..."` values). It requires outbound network access (available in this environment). Running
-it against every link is slow; sample a subset when iterating.
+- **API runtime is Fastify, not Express.** `@nestjs/core` still pulls `@nestjs/platform-express`
+  (and a vulnerable Multer) transitively; it is unused. Do not enable Nest Express uploads until a
+  patched Multer is verified (see `apps/api/README.md`).
+- **web** intentionally pins a Next.js canary to avoid a vulnerable transitive PostCSS; revisit when
+  a stable release ships the patched dependency (see `apps/web/README.md`).
+- The API runs TypeORM migrations automatically on startup and needs a reachable PostgreSQL (see
+  `apps/api/.env.example` / `AOM_DB_*`). Immich integration needs `IMMICH_URL` + `IMMICH_API_KEY`.
+- There is no automated test suite wired up yet; validate changes via `typecheck`/`build` and by
+  running the affected app.

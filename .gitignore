@@ -30,6 +30,3 @@ infra/self-hosted/logs/
 # OS/editor noise
 .DS_Store
 Thumbs.db
-
-# Generated static site (built by scripts/build_site.py)
-/_site/
