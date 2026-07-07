@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import type { Account, Database, Family, Person, Role } from '../types';
+import type { Account, Database, Family, LifeEvent, Person, Role } from '../types';
 import * as db from '../lib/db';
 import {
   loadDb,
@@ -17,7 +17,7 @@ import {
 } from '../lib/storage';
 import { roleFor } from '../lib/db';
 import { useToast } from './ToastContext';
-import type { PersonInput } from '../lib/db';
+import type { EventInput, PersonInput } from '../lib/db';
 
 interface AppContextValue {
   db: Database;
@@ -41,6 +41,10 @@ interface AppContextValue {
   createPerson: (familyId: string, input: PersonInput) => Person | null;
   updatePerson: (familyId: string, personId: string, input: PersonInput) => void;
   deletePerson: (familyId: string, personId: string) => void;
+  // events
+  createEvent: (familyId: string, input: EventInput) => LifeEvent | null;
+  updateEvent: (familyId: string, eventId: string, input: EventInput) => void;
+  deleteEvent: (familyId: string, eventId: string) => void;
   // helpers
   myRole: (familyId: string) => Role | undefined;
 }
@@ -53,8 +57,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [currentAccountId, setCurrentAccountId] = useState<string | null>(() => loadSession());
 
   useEffect(() => {
-    saveDb(database);
-  }, [database]);
+    try {
+      saveDb(database);
+    } catch (error) {
+      const message =
+        error instanceof DOMException && error.name === 'QuotaExceededError'
+          ? 'Local storage is full — remove some photos or data to save changes.'
+          : 'Could not save to local storage.';
+      toast(message, 'error');
+    }
+  }, [database, toast]);
 
   useEffect(() => {
     saveSession(currentAccountId);
@@ -202,6 +214,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [database, requireAccount, withError],
   );
 
+  const createEvent = useCallback(
+    (familyId: string, input: EventInput): LifeEvent | null =>
+      withError(() => {
+        const { db: next, event } = db.createEvent(database, requireAccount(), familyId, input);
+        setDatabase(next);
+        return event;
+      }, 'Event added'),
+    [database, requireAccount, withError],
+  );
+
+  const updateEvent = useCallback(
+    (familyId: string, eventId: string, input: EventInput) =>
+      withError(() => {
+        setDatabase(db.updateEvent(database, requireAccount(), familyId, eventId, input));
+      }, 'Event updated'),
+    [database, requireAccount, withError],
+  );
+
+  const deleteEvent = useCallback(
+    (familyId: string, eventId: string) =>
+      withError(() => {
+        setDatabase(db.deleteEvent(database, requireAccount(), familyId, eventId));
+      }, 'Event deleted'),
+    [database, requireAccount, withError],
+  );
+
   const myRole = useCallback(
     (familyId: string): Role | undefined =>
       currentAccountId ? roleFor(database, familyId, currentAccountId) : undefined,
@@ -226,6 +264,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       createPerson,
       updatePerson,
       deletePerson,
+      createEvent,
+      updateEvent,
+      deleteEvent,
       myRole,
     }),
     [
@@ -245,6 +286,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       createPerson,
       updatePerson,
       deletePerson,
+      createEvent,
+      updateEvent,
+      deleteEvent,
       myRole,
     ],
   );

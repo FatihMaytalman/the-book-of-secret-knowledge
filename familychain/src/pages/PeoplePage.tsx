@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { listPeople } from '../lib/db';
 import { canEditData } from '../lib/permissions';
@@ -8,6 +8,7 @@ import { Button, Card, EmptyState, Field, Select } from '../components/ui';
 
 export function PeoplePage() {
   const { familyId = '' } = useParams();
+  const navigate = useNavigate();
   const { db, myRole, createPerson, deletePerson } = useApp();
   const role = myRole(familyId);
   const people = useMemo(() => listPeople(db, familyId), [db, familyId]);
@@ -76,14 +77,21 @@ export function PeoplePage() {
       ) : (
         <div className="grid grid-2">
           {people.map((person) => (
-            <Card key={person.id} className="stack" style={{ gap: 6 }}>
+            <Card
+              key={person.id}
+              interactive
+              className="stack"
+              style={{ gap: 6 }}
+              onClick={() => navigate(`/family/${familyId}/people/${person.id}`)}
+            >
               <div className="row between">
                 <h3 style={{ margin: 0 }}>{person.displayName}</h3>
                 {editable ? (
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       if (window.confirm(`Delete ${person.displayName}?`)) deletePerson(familyId, person.id);
                     }}
                   >

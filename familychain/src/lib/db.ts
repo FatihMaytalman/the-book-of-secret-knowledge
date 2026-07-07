@@ -1,12 +1,16 @@
 import type {
   Account,
+  ApproxDate,
   Database,
   Family,
   Invite,
+  LifeEvent,
+  LifeEventType,
   Membership,
   Person,
   Role,
 } from '../types';
+import { compareApproxDate } from './date';
 import { newId, newInviteCode } from './ids';
 import {
   assignableRoles,
@@ -362,5 +366,102 @@ export function deletePerson(
   next.relationships = next.relationships.filter(
     (r) => r.fromPersonId !== personId && r.toPersonId !== personId,
   );
+  return next;
+}
+
+// ---- Life events ----
+
+export interface EventInput {
+  type: LifeEventType;
+  title: string;
+  date: ApproxDate;
+  description?: string;
+  location?: string;
+  personIds: string[];
+  photo?: string;
+}
+
+function validateEvent(input: EventInput): void {
+  if (!input.title.trim()) throw new DataError('An event title is required.');
+  if (!Number.isInteger(input.date.year) || input.date.year < 1 || input.date.year > 9999) {
+    throw new DataError('A valid year is required.');
+  }
+}
+
+export function listEvents(db: Database, familyId: string): LifeEvent[] {
+  return db.events
+    .filter((e) => e.familyId === familyId)
+    .sort((a, b) => compareApproxDate(a.date, b.date) || a.createdAt.localeCompare(b.createdAt));
+}
+
+export function listEventsForPerson(
+  db: Database,
+  familyId: string,
+  personId: string,
+): LifeEvent[] {
+  return listEvents(db, familyId).filter((e) => e.personIds.includes(personId));
+}
+
+export function createEvent(
+  db: Database,
+  actorId: string,
+  familyId: string,
+  input: EventInput,
+): { db: Database; event: LifeEvent } {
+  requireEditor(db, familyId, actorId);
+  validateEvent(input);
+  const event: LifeEvent = {
+    id: newId(),
+    familyId,
+    type: input.type,
+    title: input.title.trim(),
+    date: input.date,
+    description: input.description?.trim() || undefined,
+    location: input.location?.trim() || undefined,
+    personIds: input.personIds,
+    photo: input.photo,
+    createdAt: now(),
+  };
+  const next = clone(db);
+  next.events.push(event);
+  return { db: next, event };
+}
+
+export function updateEvent(
+  db: Database,
+  actorId: string,
+  familyId: string,
+  eventId: string,
+  input: EventInput,
+): Database {
+  requireEditor(db, familyId, actorId);
+  validateEvent(input);
+  const next = clone(db);
+  next.events = next.events.map((e) =>
+    e.id === eventId && e.familyId === familyId
+      ? {
+          ...e,
+          type: input.type,
+          title: input.title.trim(),
+          date: input.date,
+          description: input.description?.trim() || undefined,
+          location: input.location?.trim() || undefined,
+          personIds: input.personIds,
+          photo: input.photo,
+        }
+      : e,
+  );
+  return next;
+}
+
+export function deleteEvent(
+  db: Database,
+  actorId: string,
+  familyId: string,
+  eventId: string,
+): Database {
+  requireEditor(db, familyId, actorId);
+  const next = clone(db);
+  next.events = next.events.filter((e) => e.id !== eventId);
   return next;
 }

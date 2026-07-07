@@ -8,6 +8,7 @@ import { FamilyLayout } from './pages/FamilyLayout';
 import { DashboardPage } from './pages/DashboardPage';
 import { MembersPage } from './pages/MembersPage';
 import { PeoplePage } from './pages/PeoplePage';
+import { PersonPage } from './pages/PersonPage';
 import { TimelinePage } from './pages/TimelinePage';
 import { TreePage } from './pages/TreePage';
 
@@ -42,8 +43,9 @@ export default function App() {
               <Route path="family/:familyId" element={<FamilyLayout />}>
                 <Route index element={<DashboardPage />} />
                 <Route path="members" element={<MembersPage />} />
-                <Route path="people" element={<PeoplePage />} />
-                <Route path="timeline" element={<TimelinePage />} />
+              <Route path="people" element={<PeoplePage />} />
+              <Route path="people/:personId" element={<PersonPage />} />
+              <Route path="timeline" element={<TimelinePage />} />
                 <Route path="tree" element={<TreePage />} />
               </Route>
             </Route>
