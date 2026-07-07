@@ -6,6 +6,7 @@ import {
   PersonNameEntity,
 } from '../../database/entities';
 import { AuditModule } from '../audit/audit.module';
+import { AuthModule } from '../auth/auth.module';
 import { PeopleController } from './people.controller';
 import { PeopleService } from './people.service';
 
@@ -13,6 +14,7 @@ import { PeopleService } from './people.service';
   imports: [
     TypeOrmModule.forFeature([PersonEntity, PersonNameEntity, FamilyEntity]),
     AuditModule,
+    AuthModule,
   ],
   controllers: [PeopleController],
   providers: [PeopleService],

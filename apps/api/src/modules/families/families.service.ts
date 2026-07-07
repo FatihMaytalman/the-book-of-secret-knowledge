@@ -5,6 +5,8 @@ import type { FamilySummary } from '@aomlegacy/shared';
 import {
   FamilyEntity,
   FamilyMembershipEntity,
+  FamilyMembershipRole,
+  FamilyMembershipStatus,
   MediaAssetEntity,
 } from '../../database/entities';
 import { AuditService } from '../audit/audit.service';
@@ -40,15 +42,28 @@ export class FamiliesService {
     return this.toSummary(family);
   }
 
-  async createFamily(dto: CreateFamilyDto): Promise<FamilySummary> {
+  async createFamily(
+    dto: CreateFamilyDto,
+    actorUserId: string,
+  ): Promise<FamilySummary> {
     const slug = await this.resolveUniqueSlug(dto.slug ?? dto.name);
 
     const family = await this.familyRepository.save(
       this.familyRepository.create({ name: dto.name.trim(), slug }),
     );
 
+    await this.membershipRepository.save(
+      this.membershipRepository.create({
+        familyId: family.id,
+        userId: actorUserId,
+        role: FamilyMembershipRole.OWNER,
+        status: FamilyMembershipStatus.ACTIVE,
+      }),
+    );
+
     await this.auditService.record({
       familyId: family.id,
+      actorUserId,
       action: 'family.created',
       resourceType: 'family',
       resourceId: family.id,

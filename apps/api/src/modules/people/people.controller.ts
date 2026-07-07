@@ -6,8 +6,12 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 
+import type { AuthenticatedUser } from '../auth/auth.service';
+import { CurrentUser } from '../auth/current-user.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreatePersonDto } from './dto/create-person.dto';
 import { PeopleService } from './people.service';
 
@@ -27,7 +31,8 @@ export class PeopleController {
 
   @Post()
   @HttpCode(201)
-  createPerson(@Body() dto: CreatePersonDto) {
-    return this.peopleService.createPerson(dto);
+  @UseGuards(JwtAuthGuard)
+  createPerson(@Body() dto: CreatePersonDto, @CurrentUser() user: AuthenticatedUser) {
+    return this.peopleService.createPerson(dto, user.userId);
   }
 }

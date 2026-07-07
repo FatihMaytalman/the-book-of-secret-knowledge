@@ -6,6 +6,7 @@ import {
   MediaAssetEntity,
 } from '../../database/entities';
 import { AuditModule } from '../audit/audit.module';
+import { AuthModule } from '../auth/auth.module';
 import { FamiliesController } from './families.controller';
 import { FamiliesService } from './families.service';
 
@@ -17,6 +18,7 @@ import { FamiliesService } from './families.service';
       MediaAssetEntity,
     ]),
     AuditModule,
+    AuthModule,
   ],
   controllers: [FamiliesController],
   providers: [FamiliesService],

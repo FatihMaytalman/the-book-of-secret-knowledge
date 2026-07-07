@@ -52,7 +52,10 @@ export class PeopleService {
     return this.toSummary(person, primaryNames.get(person.id));
   }
 
-  async createPerson(dto: CreatePersonDto): Promise<PersonSummary> {
+  async createPerson(
+    dto: CreatePersonDto,
+    actorUserId: string,
+  ): Promise<PersonSummary> {
     const familyExists = await this.familyRepository.exists({
       where: { id: dto.familyId },
     });
@@ -84,6 +87,7 @@ export class PeopleService {
 
     await this.auditService.record({
       familyId: person.familyId,
+      actorUserId,
       action: 'person.created',
       resourceType: 'person',
       resourceId: person.id,
