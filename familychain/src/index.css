@@ -183,6 +183,26 @@ h1, h2, h3 { line-height: 1.2; margin: 0 0 0.4em; }
   display: block;
 }
 
+.tree-canvas {
+  height: 560px; border: 1px solid var(--border); border-radius: var(--radius);
+  overflow: hidden; background: var(--surface);
+}
+.tree-node {
+  position: relative; background: var(--surface); border: 1px solid var(--border);
+  border-left: 4px solid var(--primary); border-radius: 12px; padding: 10px 14px;
+  min-width: 150px; box-shadow: var(--shadow); cursor: pointer;
+}
+.tree-node:hover { border-color: var(--primary); }
+.tree-node__name { font-weight: 700; font-size: 0.9rem; }
+.tree-node__meta { font-size: 0.74rem; color: var(--text-muted); margin-top: 2px; }
+.tree-node__toggle {
+  position: absolute; top: -10px; right: -10px; width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  cursor: pointer; font-weight: 700; line-height: 1; display: grid; place-items: center;
+  box-shadow: var(--shadow);
+}
+.react-flow__edge-text { font-size: 10px; fill: var(--text-muted); }
+
 :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {

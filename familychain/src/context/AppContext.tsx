@@ -7,7 +7,15 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import type { Account, Database, Family, LifeEvent, Person, Role } from '../types';
+import type {
+  Account,
+  Database,
+  Family,
+  LifeEvent,
+  Person,
+  Relationship,
+  Role,
+} from '../types';
 import * as db from '../lib/db';
 import {
   loadDb,
@@ -17,7 +25,7 @@ import {
 } from '../lib/storage';
 import { roleFor } from '../lib/db';
 import { useToast } from './ToastContext';
-import type { EventInput, PersonInput } from '../lib/db';
+import type { EventInput, PersonInput, RelationshipInput } from '../lib/db';
 
 interface AppContextValue {
   db: Database;
@@ -45,6 +53,9 @@ interface AppContextValue {
   createEvent: (familyId: string, input: EventInput) => LifeEvent | null;
   updateEvent: (familyId: string, eventId: string, input: EventInput) => void;
   deleteEvent: (familyId: string, eventId: string) => void;
+  // relationships
+  createRelationship: (familyId: string, input: RelationshipInput) => Relationship | null;
+  deleteRelationship: (familyId: string, relationshipId: string) => void;
   // helpers
   myRole: (familyId: string) => Role | undefined;
 }
@@ -240,6 +251,29 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [database, requireAccount, withError],
   );
 
+  const createRelationship = useCallback(
+    (familyId: string, input: RelationshipInput): Relationship | null =>
+      withError(() => {
+        const { db: next, relationship } = db.createRelationship(
+          database,
+          requireAccount(),
+          familyId,
+          input,
+        );
+        setDatabase(next);
+        return relationship;
+      }, 'Relationship added'),
+    [database, requireAccount, withError],
+  );
+
+  const deleteRelationship = useCallback(
+    (familyId: string, relationshipId: string) =>
+      withError(() => {
+        setDatabase(db.deleteRelationship(database, requireAccount(), familyId, relationshipId));
+      }, 'Relationship removed'),
+    [database, requireAccount, withError],
+  );
+
   const myRole = useCallback(
     (familyId: string): Role | undefined =>
       currentAccountId ? roleFor(database, familyId, currentAccountId) : undefined,
@@ -267,6 +301,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       createEvent,
       updateEvent,
       deleteEvent,
+      createRelationship,
+      deleteRelationship,
       myRole,
     }),
     [
@@ -289,6 +325,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       createEvent,
       updateEvent,
       deleteEvent,
+      createRelationship,
+      deleteRelationship,
       myRole,
     ],
   );

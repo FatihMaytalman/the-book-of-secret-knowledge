@@ -8,6 +8,8 @@ import type {
   LifeEventType,
   Membership,
   Person,
+  Relationship,
+  RelationshipType,
   Role,
 } from '../types';
 import { compareApproxDate } from './date';
@@ -463,5 +465,98 @@ export function deleteEvent(
   requireEditor(db, familyId, actorId);
   const next = clone(db);
   next.events = next.events.filter((e) => e.id !== eventId);
+  return next;
+}
+
+// ---- Relationships ----
+
+export interface RelationshipInput {
+  type: RelationshipType;
+  fromPersonId: string;
+  toPersonId: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export function listRelationships(db: Database, familyId: string): Relationship[] {
+  return db.relationships.filter((r) => r.familyId === familyId);
+}
+
+/** True if `ancestorId` is an ancestor of `personId` via parent edges. */
+function isAncestor(
+  relationships: Relationship[],
+  ancestorId: string,
+  personId: string,
+): boolean {
+  const parentsOf = (childId: string) =>
+    relationships
+      .filter((r) => r.type === 'parent' && r.toPersonId === childId)
+      .map((r) => r.fromPersonId);
+  const stack = [...parentsOf(personId)];
+  const seen = new Set<string>();
+  while (stack.length) {
+    const current = stack.pop()!;
+    if (current === ancestorId) return true;
+    if (seen.has(current)) continue;
+    seen.add(current);
+    stack.push(...parentsOf(current));
+  }
+  return false;
+}
+
+export function createRelationship(
+  db: Database,
+  actorId: string,
+  familyId: string,
+  input: RelationshipInput,
+): { db: Database; relationship: Relationship } {
+  requireEditor(db, familyId, actorId);
+  if (input.fromPersonId === input.toPersonId) {
+    throw new DataError('A person cannot be related to themselves.');
+  }
+  const familyRels = listRelationships(db, familyId);
+
+  const isDuplicate = familyRels.some((r) => {
+    if (r.type !== input.type) return false;
+    if (input.type === 'parent') {
+      return r.fromPersonId === input.fromPersonId && r.toPersonId === input.toPersonId;
+    }
+    // spouse/partner are undirected
+    const a = new Set([r.fromPersonId, r.toPersonId]);
+    return a.has(input.fromPersonId) && a.has(input.toPersonId);
+  });
+  if (isDuplicate) throw new DataError('That relationship already exists.');
+
+  if (input.type === 'parent') {
+    // parent = from, child = to. Prevent cycles.
+    if (isAncestor(familyRels, input.toPersonId, input.fromPersonId)) {
+      throw new DataError('That would create an impossible ancestry loop.');
+    }
+  }
+
+  const relationship: Relationship = {
+    id: newId(),
+    familyId,
+    type: input.type,
+    fromPersonId: input.fromPersonId,
+    toPersonId: input.toPersonId,
+    startDate: input.startDate || undefined,
+    endDate: input.endDate || undefined,
+    createdAt: now(),
+  };
+  const next = clone(db);
+  next.relationships.push(relationship);
+  return { db: next, relationship };
+}
+
+export function deleteRelationship(
+  db: Database,
+  actorId: string,
+  familyId: string,
+  relationshipId: string,
+): Database {
+  requireEditor(db, familyId, actorId);
+  const next = clone(db);
+  next.relationships = next.relationships.filter((r) => r.id !== relationshipId);
   return next;
 }
