@@ -6,6 +6,7 @@ import { canEditData } from '../lib/permissions';
 import type { LifeEvent } from '../types';
 import { Button, Card, EmptyState } from '../components/ui';
 import { EventForm } from '../components/EventForm';
+import { PersonForm } from '../components/PersonForm';
 import { Timeline } from '../components/Timeline';
 
 export function PersonPage() {
@@ -22,6 +23,7 @@ export function PersonPage() {
 
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<LifeEvent | undefined>(undefined);
+  const [editingPerson, setEditingPerson] = useState(false);
 
   if (!role) return null;
   if (!person) {
@@ -38,9 +40,14 @@ export function PersonPage() {
 
   return (
     <div className="stack">
-      <div>
-        <Link to={`/family/${familyId}/people`} className="eyebrow">← People</Link>
-        <h2 style={{ margin: '6px 0 0' }}>{person.displayName}</h2>
+      <div className="row between row-wrap">
+        <div>
+          <Link to={`/family/${familyId}/people`} className="eyebrow">← People</Link>
+          <h2 style={{ margin: '6px 0 0' }}>{person.displayName}</h2>
+        </div>
+        {editable ? (
+          <Button variant="secondary" onClick={() => setEditingPerson(true)}>Edit profile</Button>
+        ) : null}
       </div>
 
       <Card>
@@ -84,6 +91,10 @@ export function PersonPage() {
           presetPersonId={person.id}
           onClose={() => { setShowForm(false); setEditing(undefined); }}
         />
+      ) : null}
+
+      {editingPerson ? (
+        <PersonForm familyId={familyId} person={person} onClose={() => setEditingPerson(false)} />
       ) : null}
     </div>
   );

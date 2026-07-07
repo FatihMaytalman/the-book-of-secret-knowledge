@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { listMembers, listMyFamilies } from '../lib/db';
+import { exportDatabaseJson, downloadText } from '../lib/backup';
 import { Button, Card, EmptyState, RoleBadge, Skeleton } from '../components/ui';
 
 export function FamiliesPage() {
-  const { db, currentAccount, createFamily, acceptInvite, myRole } = useApp();
+  const { db, currentAccount, createFamily, acceptInvite, myRole, importBackup } = useApp();
   const navigate = useNavigate();
+  const fileInput = useRef<HTMLInputElement>(null);
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
   const [ready, setReady] = useState(false);
@@ -118,6 +120,42 @@ export function FamiliesPage() {
           })}
         </div>
       )}
+
+      <Card className="stack">
+        <h3 style={{ margin: 0 }}>Data &amp; backup</h3>
+        <p className="muted" style={{ margin: 0, fontSize: '0.85rem' }}>
+          Everything lives in this browser. Export a backup to move your data to another device, or
+          import one to restore it.
+        </p>
+        <div className="row row-wrap" style={{ gap: 8 }}>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              const stamp = new Date().toISOString().slice(0, 10);
+              downloadText(`familychain-backup-${stamp}.json`, exportDatabaseJson(db));
+            }}
+          >
+            ⬇ Export backup
+          </Button>
+          <Button variant="secondary" onClick={() => fileInput.current?.click()}>
+            ⬆ Import backup
+          </Button>
+          <input
+            ref={fileInput}
+            type="file"
+            accept="application/json,.json"
+            style={{ display: 'none' }}
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              e.target.value = '';
+              if (!file) return;
+              if (!window.confirm('Importing a backup REPLACES all data currently on this device. Continue?')) return;
+              const text = await file.text();
+              if (importBackup(text)) navigate('/');
+            }}
+          />
+        </div>
+      </Card>
     </div>
   );
 }

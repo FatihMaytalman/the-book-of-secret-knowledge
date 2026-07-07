@@ -24,6 +24,7 @@ import {
   saveSession,
 } from '../lib/storage';
 import { roleFor } from '../lib/db';
+import { parseDatabaseJson } from '../lib/backup';
 import { useToast } from './ToastContext';
 import type { EventInput, PersonInput, RelationshipInput } from '../lib/db';
 
@@ -56,6 +57,8 @@ interface AppContextValue {
   // relationships
   createRelationship: (familyId: string, input: RelationshipInput) => Relationship | null;
   deleteRelationship: (familyId: string, relationshipId: string) => void;
+  // data portability
+  importBackup: (text: string) => boolean;
   // helpers
   myRole: (familyId: string) => Role | undefined;
 }
@@ -274,6 +277,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [database, requireAccount, withError],
   );
 
+  const importBackup = useCallback(
+    (text: string): boolean => {
+      const result = withError(() => {
+        const next = parseDatabaseJson(text);
+        setDatabase(next);
+        if (currentAccountId && !next.accounts.some((a) => a.id === currentAccountId)) {
+          setCurrentAccountId(null);
+        }
+        return true;
+      }, 'Backup imported');
+      return result === true;
+    },
+    [currentAccountId, withError],
+  );
+
   const myRole = useCallback(
     (familyId: string): Role | undefined =>
       currentAccountId ? roleFor(database, familyId, currentAccountId) : undefined,
@@ -303,6 +321,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       deleteEvent,
       createRelationship,
       deleteRelationship,
+      importBackup,
       myRole,
     }),
     [
@@ -327,6 +346,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       deleteEvent,
       createRelationship,
       deleteRelationship,
+      importBackup,
       myRole,
     ],
   );
