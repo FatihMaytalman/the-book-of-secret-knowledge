@@ -1,11 +1,7 @@
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
 import { AppShell } from '@/components/layout/app-shell';
-
-const demoFamilies: Record<string, string> = {
-  maytalman: 'Maytalman Family Archive',
-  demo: 'Demo Family Workspace',
-};
+import { fetchFamily } from '@/lib/api';
 
 interface FamilyLayoutProps {
   children: ReactNode;
@@ -14,9 +10,12 @@ interface FamilyLayoutProps {
 
 export default async function FamilyLayout({ children, params }: FamilyLayoutProps) {
   const { id } = await params;
-  const familyName = demoFamilies[id];
 
-  if (!familyName) {
+  let familyName: string;
+  try {
+    const family = await fetchFamily(id);
+    familyName = family.name;
+  } catch {
     notFound();
   }
 
@@ -25,8 +24,4 @@ export default async function FamilyLayout({ children, params }: FamilyLayoutPro
       {children}
     </AppShell>
   );
-}
-
-export function generateStaticParams() {
-  return Object.keys(demoFamilies).map((id) => ({ id }));
 }

@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
-import { PlaceholderPanel } from '@/components/layout/placeholder-panel';
+import { PeopleManager } from '@/components/people/people-manager';
 
 export const metadata: Metadata = {
   title: 'People',
 };
 
-export default function PeoplePage() {
-  return (
-    <PlaceholderPanel
-      title="People directory"
-      description="Profile cards, relationship paths, and life event summaries for the family."
-    />
-  );
+interface PeoplePageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function PeoplePage({ params }: PeoplePageProps) {
+  const { id } = await params;
+
+  return <PeopleManager familyId={id} />;
 }
