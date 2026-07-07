@@ -2,14 +2,17 @@
 
 ## Cursor Cloud specific instructions
 
-This repository (`the-book-of-secret-knowledge`) is a **documentation-only "awesome list"**. The
-entire product is a single large `README.md` (~210 KB) plus a preview image in `static/img`. There
-is **no application code, no `package.json`, no build system, and no automated test suite**. The
-GitHub Actions workflow in `.github/workflows/azure-webapps-node.yml` runs `npm run build/test
---if-present`, which are no-ops here because there is no `package.json`.
+The root of this repository is the **"awesome list" book**: a single large `README.md` (~210 KB)
+plus a preview image in `static/img`. The notes below cover working with and deploying that book.
 
-The "development environment" therefore centers on editing/reviewing Markdown, linting it, rendering
-it for preview, and checking links (see `.github/CONTRIBUTING.md`).
+> Note: the repo has since grown into a monorepo — `master` also contains a separate NestJS
+> application under `apps/` (with its own `package.json`, migrations, and `docs/`/`infra/`). That
+> application has its **own** setup/build/test and is **out of scope** for these book/deploy notes;
+> set it up from `apps/api/README.md` when working on it. The root `README.md` remains the book, and
+> the Pages deploy below publishes that book.
+
+For the book, the "development environment" centers on editing/reviewing Markdown, linting it,
+rendering it for preview, and checking links (see `.github/CONTRIBUTING.md`).
 
 ### Lint
 
