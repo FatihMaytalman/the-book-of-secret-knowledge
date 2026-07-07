@@ -2,6 +2,7 @@ import { HashRouter, Link, Outlet, Route, Routes } from 'react-router-dom';
 import { ToastProvider } from './context/ToastContext';
 import { AppProvider, useApp } from './context/AppContext';
 import { AccountSwitcher } from './components/AccountSwitcher';
+import { ThemeToggle } from './components/ThemeToggle';
 import { Onboarding } from './pages/Onboarding';
 import { FamiliesPage } from './pages/FamiliesPage';
 import { FamilyLayout } from './pages/FamilyLayout';
@@ -22,6 +23,7 @@ function RootLayout() {
           Family<span>Chain</span>
         </Link>
         <div className="row">
+          <ThemeToggle />
           <AccountSwitcher />
         </div>
       </header>

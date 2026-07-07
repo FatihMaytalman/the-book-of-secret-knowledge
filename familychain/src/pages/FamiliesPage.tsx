@@ -1,14 +1,20 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { listMembers, listMyFamilies } from '../lib/db';
-import { Button, Card, EmptyState, RoleBadge } from '../components/ui';
+import { Button, Card, EmptyState, RoleBadge, Skeleton } from '../components/ui';
 
 export function FamiliesPage() {
   const { db, currentAccount, createFamily, acceptInvite, myRole } = useApp();
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const id = window.setTimeout(() => setReady(true), 280);
+    return () => window.clearTimeout(id);
+  }, []);
 
   const families = useMemo(
     () => (currentAccount ? listMyFamilies(db, currentAccount.id) : []),
@@ -76,7 +82,12 @@ export function FamiliesPage() {
         </Card>
       </div>
 
-      {families.length === 0 ? (
+      {!ready ? (
+        <div className="grid grid-2">
+          <Skeleton />
+          <Skeleton />
+        </div>
+      ) : families.length === 0 ? (
         <EmptyState
           icon="🌳"
           title="No families yet"

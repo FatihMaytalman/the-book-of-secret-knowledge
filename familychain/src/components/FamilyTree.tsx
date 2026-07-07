@@ -14,6 +14,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import type { Person, Relationship } from '../types';
 import { buildLayout, childrenOf } from '../lib/relationships';
+import { currentTheme } from '../lib/theme';
 import { EmptyState } from './ui';
 
 interface PersonNodeData {
@@ -138,6 +139,7 @@ export function FamilyTree({
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
+        colorMode={currentTheme() === 'dark' ? 'dark' : 'light'}
         onNodeClick={(_, node) => navigate(`/family/${familyId}/people/${node.id}`)}
         fitView
         minZoom={0.2}

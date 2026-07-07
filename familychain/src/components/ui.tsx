@@ -100,6 +100,10 @@ export function EmptyState({
   );
 }
 
+export function Skeleton({ height = 84, width = '100%' }: { height?: number; width?: number | string }) {
+  return <div className="skeleton" style={{ height, width }} aria-hidden />;
+}
+
 export function Modal({
   title,
   onClose,
