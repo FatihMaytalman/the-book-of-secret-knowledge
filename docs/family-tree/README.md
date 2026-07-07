@@ -11,6 +11,7 @@ This directory contains the sequenced master planning artifact for the Family Tr
 
 - [Unified Master Plan](./master-plan.md) - all 18 requested phases in order.
 - [Full Execution Team](./execution-team.md) - team structure, roles, squads, hiring order, quality gates, and operating cadence.
+- [Tooling Acceleration Playbook](./tooling-acceleration.md) - local Docker, Ollama, Kimi, CI, and AI-agent workflows for faster no-compromise delivery.
 - [Self-Hosted Infrastructure](../../infra/self-hosted/README.md) - Docker Compose baseline, environment template, and operations runbooks.
 - [AOM Legacy API](../../apps/api/README.md) - backend service responsibilities and Immich boundary.
 - [AOM Legacy Web App](../../apps/web/README.md) - browser experience scope and Phase 1 screens.

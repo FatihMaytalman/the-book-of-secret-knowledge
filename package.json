@@ -13,6 +13,12 @@
     "lint": "biome check apps packages --files-ignore-unknown=true",
     "format": "biome check --write apps packages --files-ignore-unknown=true",
     "test": "npm run test --workspaces --if-present",
+    "doctor": "node scripts/dev-doctor.mjs",
+    "ai:review:kimi": "node scripts/ai-review.mjs --provider kimi",
+    "ai:review:ollama": "node scripts/ai-review.mjs --provider ollama",
+    "docker:selfhost:config": "docker compose --env-file infra/self-hosted/.env.example -f infra/self-hosted/docker-compose.yml config",
+    "docker:selfhost:up": "docker compose --env-file infra/self-hosted/.env.example -f infra/self-hosted/docker-compose.yml up -d",
+    "docker:selfhost:down": "docker compose --env-file infra/self-hosted/.env.example -f infra/self-hosted/docker-compose.yml down",
     "dev:api": "npm run dev -w apps/api",
     "dev:web": "npm run dev -w apps/web"
   },
