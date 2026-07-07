@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import type { FamilySummary } from '@aomlegacy/shared';
 import {
   FamilyEntity,
@@ -24,8 +24,18 @@ export class FamiliesService {
     private readonly auditService: AuditService,
   ) {}
 
-  async listFamilies(): Promise<FamilySummary[]> {
+  async listFamilies(userId: string): Promise<FamilySummary[]> {
+    const memberships = await this.membershipRepository.find({
+      where: { userId },
+    });
+    const familyIds = memberships.map((membership) => membership.familyId);
+
+    if (familyIds.length === 0) {
+      return [];
+    }
+
     const families = await this.familyRepository.find({
+      where: { id: In(familyIds) },
       order: { createdAt: 'ASC' },
     });
 

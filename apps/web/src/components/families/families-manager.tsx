@@ -16,6 +16,7 @@ export function FamiliesManager() {
   const familiesQuery = useQuery({
     queryKey: ['families'],
     queryFn: fetchFamilies,
+    enabled: !!user,
   });
 
   const createMutation = useMutation({
@@ -32,9 +33,10 @@ export function FamiliesManager() {
     <div className="mt-10 space-y-8">
       {!user ? (
         <Card>
-          <CardTitle>Sign in to create a family</CardTitle>
+          <CardTitle>Sign in to view your families</CardTitle>
           <CardDescription>
-            Creating a workspace requires an account. You can still browse existing families below.
+            Family workspaces are private. Sign in to see the families you belong to and create
+            new ones.
           </CardDescription>
           <div className="mt-5">
             <Link href="/login">

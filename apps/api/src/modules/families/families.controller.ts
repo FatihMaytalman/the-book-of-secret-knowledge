@@ -19,8 +19,9 @@ export class FamiliesController {
   constructor(private readonly familiesService: FamiliesService) {}
 
   @Get()
-  listFamilies() {
-    return this.familiesService.listFamilies();
+  @UseGuards(JwtAuthGuard)
+  listFamilies(@CurrentUser() user: AuthenticatedUser) {
+    return this.familiesService.listFamilies(user.userId);
   }
 
   @Get(':id')
