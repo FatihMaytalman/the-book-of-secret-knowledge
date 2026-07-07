@@ -33,6 +33,23 @@ Node **>= 22**. Standard commands are already documented — prefer these source
 - Per-app setup, env vars, and endpoints: `apps/api/README.md` and `apps/web/README.md`.
 - Self-hosted/Docker stack: `infra/self-hosted/README.md`.
 
+### Local database for the API (dev)
+
+The API needs a reachable PostgreSQL and runs TypeORM migrations automatically on startup.
+`infra/self-hosted` provides a Docker Compose Postgres, but if Docker is unavailable, a local
+Postgres works. One-time bring-up (idempotent):
+
+```bash
+sudo apt-get update && sudo apt-get install -y postgresql postgresql-contrib
+sudo pg_ctlcluster 16 main start            # or: sudo service postgresql start
+sudo -u postgres psql -c "CREATE ROLE aomlegacy LOGIN PASSWORD 'aomlegacy_local_dev_pw';"
+sudo -u postgres createdb -O aomlegacy aomlegacy
+# then in apps/api/.env set AOM_DB_* to match (see apps/api/.env.example)
+```
+
+For the web app to reach the API directly during dev (bypassing the Compose reverse proxy on
+`:8080`), set `NEXT_PUBLIC_API_BASE_URL=http://localhost:3001/api` in `apps/web/.env.local`.
+
 ### Non-obvious caveats
 
 - **API runtime is Fastify, not Express.** `@nestjs/core` still pulls `@nestjs/platform-express`
