@@ -1,5 +1,14 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 
+import { CreatePersonDto } from './dto/create-person.dto';
 import { PeopleService } from './people.service';
 
 @Controller('people')
@@ -7,18 +16,18 @@ export class PeopleController {
   constructor(private readonly peopleService: PeopleService) {}
 
   @Get()
-  listPeople() {
-    return this.peopleService.listPeople();
+  listPeople(@Query('familyId') familyId?: string) {
+    return this.peopleService.listPeople(familyId);
   }
 
   @Get(':id')
-  getPerson(@Param("id") id: string) {
-    const person = this.peopleService.getPerson(id);
+  getPerson(@Param('id') id: string) {
+    return this.peopleService.getPerson(id);
+  }
 
-    if (!person) {
-      throw new NotFoundException(`Person not found: ${id}`);
-    }
-
-    return person;
+  @Post()
+  @HttpCode(201)
+  createPerson(@Body() dto: CreatePersonDto) {
+    return this.peopleService.createPerson(dto);
   }
 }
