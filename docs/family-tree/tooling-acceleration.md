@@ -15,7 +15,8 @@ Rules for local work:
 5. Run builds, tests, linting, and type checks locally before pushing.
 6. Report summarised results only: command, pass/fail, important errors, and known caveats.
 7. In Windows PowerShell, enter terminal commands one at a time. Do not paste chained command blocks.
-8. Use British spelling in project-facing documentation and status reports where new text is added.
+8. Always display the page being worked on when doing UI work. State the route, open it locally, and keep relevant tool windows visible.
+9. Use British spelling in project-facing documentation and status reports where new text is added.
 
 ## What to use locally
 
@@ -40,6 +41,49 @@ npm run doctor
 ```
 
 The doctor checks Node, npm, GitHub CLI, Docker, Docker Compose, Ollama, key repo files, and optional AI environment variables.
+
+## Visual workspace policy
+
+When working on a page or UI flow, the active route must be visible on the founder's Windows desktop.
+
+Before UI work:
+
+```powershell
+npm run dev:web
+```
+
+Open the route being edited. Example:
+
+```powershell
+Start-Process "http://localhost:3000/families"
+```
+
+For API-backed UI work, open the API docs too:
+
+```powershell
+npm run dev:api
+```
+
+```powershell
+Start-Process "http://localhost:3001/api/docs"
+```
+
+Keep relevant tools open and visible:
+
+- Docker Desktop for service/container health.
+- Browser window for the page being edited.
+- API docs window for API-backed pages.
+- Ollama terminal/window when local AI review is running.
+- Kimi/browser/API console only when external review is needed.
+
+Every UI status update should include:
+
+- page or route,
+- tool windows opened,
+- what changed visually,
+- verification summary.
+
+Cloud-agent limitation: this hosted workspace cannot open the founder's Windows GUI. When working from the cloud, report the exact route and local command to open. When working locally, open the page/tool windows directly.
 
 ## Kimi acceleration
 
