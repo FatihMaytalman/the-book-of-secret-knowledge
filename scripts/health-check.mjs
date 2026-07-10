@@ -73,7 +73,7 @@ function runCheck(check) {
   return false;
 }
 
-console.log('AOM Legacy monorepo health check\n');
+console.log('Kinvault monorepo health check\n');
 
 let failed = 0;
 

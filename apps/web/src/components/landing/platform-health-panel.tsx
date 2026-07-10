@@ -28,7 +28,7 @@ export function PlatformHealthPanel({ health }: PlatformHealthPanelProps) {
     <Card className="border-turquoise-500/20 bg-navy-950/60">
       <CardTitle>Platform health</CardTitle>
       <CardDescription>
-        Live checks against the AOM Legacy API and Claude heritage assistant.
+        Live checks against the Kinvault API and Claude heritage assistant.
       </CardDescription>
 
       <dl className="mt-6 grid gap-4 sm:grid-cols-2">

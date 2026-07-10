@@ -1,6 +1,7 @@
-# Vercel deployment for AOM Legacy web
+# Vercel deployment for Kinvault web
 
-The Vercel project `the-book-of-secret-knowledge-web` must build the **monorepo workspace**, not the repository root package.
+The Vercel project `the-book-of-secret-knowledge-web` (legacy project name) must build the
+**monorepo workspace**, not the repository root package.
 
 ## Required Vercel project settings
 
@@ -22,6 +23,10 @@ Or keep Root Directory empty and use the root `vercel.json` in this repository.
 | --- | --- |
 | `NEXT_PUBLIC_API_BASE_URL` | `https://api.aomlegacy.com/api` |
 | `NEXT_PUBLIC_SITE_URL` | `https://aomlegacy.com` |
+
+Set `NEXT_PUBLIC_API_BASE_URL` on every Vercel environment (including previews). Without it,
+server-rendered pages that call the API will fall back to `http://localhost:8080/api`, which is not
+reachable from Vercel build workers or edge runtimes.
 
 ## Note on Cloudflare vs Vercel
 
