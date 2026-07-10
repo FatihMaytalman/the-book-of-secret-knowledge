@@ -18,9 +18,11 @@ function statusTone(online: boolean, configured?: boolean): string {
 }
 
 export function PlatformHealthPanel({ health }: PlatformHealthPanelProps) {
-  const apiOnline = health.api?.status === 'ok';
+  const apiOnline =
+    health.api?.status === 'ok' || health.api?.status === 'degraded';
   const aiOnline = health.ai?.status === 'ok';
   const aiConfigured = health.ai?.status !== 'unconfigured';
+  const databaseStatus = health.api?.database ?? 'unknown';
 
   return (
     <Card className="border-turquoise-500/20 bg-navy-950/60">
@@ -37,6 +39,7 @@ export function PlatformHealthPanel({ health }: PlatformHealthPanelProps) {
           </dd>
           <p className="mt-1 text-xs text-warm-white/60">
             {health.api?.service ?? 'aomlegacy-api unreachable'}
+            {health.api ? ` · database ${databaseStatus}` : ''}
           </p>
         </div>
 

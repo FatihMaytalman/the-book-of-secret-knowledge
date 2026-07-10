@@ -7,13 +7,49 @@ on:
       - 'apps/web/**'
       - 'packages/shared/**'
       - 'package-lock.json'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'apps/web/**'
+      - 'packages/shared/**'
+      - 'package-lock.json'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install monorepo dependencies
+        run: npm ci
+        working-directory: .
+
+      - name: Build shared package
+        run: npm run build -w packages/shared
+        working-directory: .
+
+      - name: Build Cloudflare bundle
+        run: npx opennextjs-cloudflare build
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL || 'https://api.aomlegacy.com/api' }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://aomlegacy.com' }}
+
   deploy:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     defaults:
       run:

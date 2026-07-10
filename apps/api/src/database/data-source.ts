@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { config as loadEnv } from 'dotenv';
 import { DataSource } from 'typeorm';
 import {
   AuditEventEntity,
@@ -15,6 +16,8 @@ import {
 import { InitialSchema1730000000000 } from './migrations/1730000000000-InitialSchema';
 import { MediaDedupProvenance1730000001000 } from './migrations/1730000001000-MediaDedupProvenance';
 import { ImmichSyncAndDedup1730000002000 } from './migrations/1730000002000-ImmichSyncAndDedup';
+
+loadEnv({ path: ['.env', '.env.local'] });
 
 export const entities = [
   UserAccountEntity,

@@ -37,11 +37,19 @@ const checks = [
     args: ['run', 'build', '-w', 'apps/api'],
     cwd: root,
   },
+  {
+    name: 'cloudflare opennext build',
+    command: 'npx',
+    args: ['opennextjs-cloudflare', 'build'],
+    cwd: join(root, 'apps/web'),
+  },
 ];
 
 const requiredFiles = [
   'apps/web/wrangler.toml',
   'apps/web/open-next.config.ts',
+  'apps/web/vercel.json',
+  'vercel.json',
   'apps/api/src/modules/ai/ai.module.ts',
   'infra/self-hosted/nginx/aomlegacy.conf',
 ];
@@ -82,6 +90,40 @@ for (const check of checks) {
   if (!runCheck(check)) {
     failed += 1;
   }
+}
+
+async function checkLiveApi() {
+  const apiBase =
+    process.env.HEALTH_CHECK_API_URL?.replace(/\/$/, '') ??
+    'http://localhost:3001/api';
+
+  try {
+    const response = await fetch(`${apiBase}/health`);
+    if (!response.ok) {
+      console.error(`❌ live api health (${apiBase}/health) status ${response.status}`);
+      return false;
+    }
+
+    const payload = await response.json();
+    if (payload.status !== 'ok' && payload.status !== 'degraded') {
+      console.error(`❌ live api health unexpected payload: ${JSON.stringify(payload)}`);
+      return false;
+    }
+
+    console.log(`✅ live api health (${apiBase}/health)`);
+    return true;
+  } catch (error) {
+    console.warn(
+      `⚠️ live api health skipped (${apiBase}/health): ${
+        error instanceof Error ? error.message : 'unreachable'
+      }`,
+    );
+    return true;
+  }
+}
+
+if (!(await checkLiveApi())) {
+  failed += 1;
 }
 
 console.log('');

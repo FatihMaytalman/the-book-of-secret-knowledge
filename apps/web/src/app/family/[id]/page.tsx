@@ -21,7 +21,7 @@ export default async function FamilyDashboardPage({ params }: FamilyDashboardPag
   let apiStatus = 'offline';
   try {
     const health = await fetchApiHealth();
-    apiStatus = health.status;
+    apiStatus = health.status === 'degraded' ? 'degraded' : health.status;
   } catch {
     apiStatus = 'offline';
   }
