@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { entities, migrations } from './database/data-source';
+import { AiModule } from './modules/ai/ai.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { FamiliesModule } from './modules/families/families.module';
@@ -33,6 +34,7 @@ import { SocialModule } from './modules/social/social.module';
       }),
     }),
     HealthModule,
+    AiModule,
     AuthModule,
     FamiliesModule,
     PeopleModule,

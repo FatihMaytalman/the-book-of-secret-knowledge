@@ -21,6 +21,8 @@ coverage/
 # Local platform state
 .netlify/
 .vercel/
+.wrangler/
+.open-next/
 
 # Self-hosted local data
 infra/self-hosted/data/

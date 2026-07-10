@@ -8,16 +8,52 @@ export interface HealthResponse {
   timestamp: string;
 }
 
-export async function fetchApiHealth(): Promise<HealthResponse> {
-  const response = await fetch(`${apiBaseUrl}/health`, {
-    next: { revalidate: 30 },
+export interface AiHealthResponse {
+  status: 'ok' | 'unconfigured' | 'error';
+  provider: 'anthropic';
+  model: string;
+  message: string;
+}
+
+export interface PlatformHealth {
+  api: HealthResponse | null;
+  ai: AiHealthResponse | null;
+  checkedAt: string;
+}
+
+async function fetchJson<T>(path: string, revalidateSeconds = 30): Promise<T> {
+  const response = await fetch(`${apiBaseUrl}${path}`, {
+    next: { revalidate: revalidateSeconds },
   });
 
   if (!response.ok) {
-    throw new Error(`API health check failed with status ${response.status}`);
+    throw new Error(`Request failed with status ${response.status}`);
   }
 
-  return response.json() as Promise<HealthResponse>;
+  return response.json() as Promise<T>;
+}
+
+export async function fetchApiHealth(): Promise<HealthResponse> {
+  return fetchJson<HealthResponse>('/health');
+}
+
+export async function fetchAiHealth(): Promise<AiHealthResponse> {
+  return fetchJson<AiHealthResponse>('/ai/health');
+}
+
+export async function fetchPlatformHealth(): Promise<PlatformHealth> {
+  const checkedAt = new Date().toISOString();
+
+  const [apiResult, aiResult] = await Promise.allSettled([
+    fetchApiHealth(),
+    fetchAiHealth(),
+  ]);
+
+  return {
+    api: apiResult.status === 'fulfilled' ? apiResult.value : null,
+    ai: aiResult.status === 'fulfilled' ? aiResult.value : null,
+    checkedAt,
+  };
 }
 
 export { apiBaseUrl };
