@@ -1,6 +1,12 @@
-const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ??
-  'http://localhost:8080/api';
+function getApiBaseUrl(): string {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '');
+  if (!baseUrl) {
+    throw new Error('NEXT_PUBLIC_API_BASE_URL is not configured');
+  }
+  return baseUrl;
+}
+
+const apiBaseUrl = getApiBaseUrl();
 
 export interface HealthResponse {
   status: string;
