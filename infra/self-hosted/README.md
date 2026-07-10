@@ -70,7 +70,7 @@ docker compose --profile aom-app up -d aom-api
 docker compose --profile aom-app up -d aom-api aom-web
 ```
 
-The web app is available on port `3000` and through nginx at `/login`, `/families`, and `/family/*`.
+The web app is available on port `3000` and through nginx at `/`, `/login`, `/families`, and `/family/*`. Immich is available at `/photos/`.
 
 8. Configure Immich sync for the API:
 

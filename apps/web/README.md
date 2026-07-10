@@ -44,8 +44,10 @@ The app listens on port `3000` by default.
 
 When running through the Docker Compose stack:
 
-- Immich remains available at `http://localhost:8080/`.
-- AOM Legacy web routes are proxied at `/login`, `/families`, and `/family/*`.
+- The public landing page is available at `http://localhost:8080/`.
+- Family Tree web routes are proxied at `/`, `/login`, `/families`, and `/family/*`.
+- Immich media library is proxied at `/photos/`.
+- The API is available at `/api/*`.
 - The full Next.js app is also exposed directly on port `3000`.
 
 ## App routes
@@ -75,4 +77,4 @@ The design system follows the premium heritage identity in `docs/family-tree/mas
 - Soft Cream `#F8F4EE`
 - Warm White `#F0EDE8`
 
-The scaffold uses a Next.js canary release because the latest stable line available during setup still resolved a vulnerable transitive PostCSS version in `npm audit`. Revisit this pin when a stable Next.js release includes the patched PostCSS dependency.
+The app uses Next.js 16.2.x for Cloudflare OpenNext compatibility. Revisit version pins when upgrading the adapter.
