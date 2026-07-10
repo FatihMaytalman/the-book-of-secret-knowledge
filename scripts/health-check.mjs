@@ -50,6 +50,7 @@ const requiredFiles = [
   'apps/web/open-next.config.ts',
   'apps/web/vercel.json',
   'vercel.json',
+  'infra/vercel/README.md',
   'apps/api/src/modules/ai/ai.module.ts',
   'infra/self-hosted/nginx/aomlegacy.conf',
 ];
