@@ -1,7 +1,7 @@
 {
-  "name": "aomlegacy-family-tree",
+  "name": "kinvault",
   "private": true,
-  "description": "AOM Legacy Family Tree platform monorepo.",
+  "description": "Kinvault - the private home for your family's memories, story, and legacy. An AOM Legacy platform.",
   "workspaces": [
     "packages/shared",
     "apps/api",

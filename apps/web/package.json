@@ -2,7 +2,7 @@
   "name": "@aomlegacy/web",
   "private": true,
   "version": "0.1.0",
-  "description": "AOM Legacy Family Tree web app",
+  "description": "Kinvault web app. An AOM Legacy platform.",
   "type": "module",
   "scripts": {
     "dev": "next dev --port 3000",
