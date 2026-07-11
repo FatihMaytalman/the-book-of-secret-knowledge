@@ -1,7 +1,7 @@
 {
-  "name": "aomlegacy-family-tree",
+  "name": "bizimkiler",
   "private": true,
-  "description": "AOM Legacy Family Tree platform monorepo.",
+  "description": "Bizimkiler — One Photo. One Memory. One Family. An AOM Legacy platform.",
   "workspaces": [
     "packages/shared",
     "apps/api",
@@ -21,5 +21,8 @@
   "devDependencies": {
     "@types/node": "^26.1.0",
     "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "next": "16.2.10"
   }
 }

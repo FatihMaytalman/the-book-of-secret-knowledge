@@ -9,6 +9,9 @@ import { FamiliesModule } from './modules/families/families.module';
 import { HealthModule } from './modules/health/health.module';
 import { MediaModule } from './modules/media/media.module';
 import { PeopleModule } from './modules/people/people.module';
+import { InvitesModule } from './modules/invites/invites.module';
+import { MemoriesModule } from './modules/memories/memories.module';
+import { RelationshipsModule } from './modules/relationships/relationships.module';
 import { SocialModule } from './modules/social/social.module';
 
 @Module({
@@ -39,6 +42,9 @@ import { SocialModule } from './modules/social/social.module';
     FamiliesModule,
     PeopleModule,
     MediaModule,
+    MemoriesModule,
+    InvitesModule,
+    RelationshipsModule,
     SocialModule,
     AuditModule,
   ],

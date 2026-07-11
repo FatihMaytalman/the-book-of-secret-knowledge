@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono, Playfair_Display } from 'next/font/google';
 import { QueryProvider } from '@/components/providers/query-provider';
+import { AuthProvider } from '@/components/providers/auth-provider';
 import './globals.css';
 
 const inter = Inter({
@@ -20,10 +21,11 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'AOM Legacy',
-    template: '%s · AOM Legacy',
+    default: 'Bizimkiler',
+    template: '%s · Bizimkiler',
   },
-  description: 'Private digital family legacy platform by AOM Legacy.',
+  description:
+    'Bizimkiler — One Photo. One Memory. One Family.',
 };
 
 export default function RootLayout({
@@ -37,7 +39,9 @@ export default function RootLayout({
       className={`${inter.variable} ${playfair.variable} ${jetbrains.variable}`}
     >
       <body>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

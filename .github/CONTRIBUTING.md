@@ -6,7 +6,7 @@ If you would like to support this project, have an interesting idea how to impro
 
 ## Using the issue tracker
 
-The [issue tracker](https://github.com/trimstray/the-book-of-secret-knowledge/issues) is
+The issue tracker for this repository is
 the preferred channel for bug reports, features requests and submitting pull requests, but please respect the following restrictions:
 
 * Please **do not** use the issue tracker for personal support requests (use
@@ -32,26 +32,3 @@ When creating a pull request, please heed the following:
 - Code review may ensue in order to help shape your proposal
 - Explain the problem and your proposed solution
 - One-line description - please don't continue the description on new lines
-
-## How to find broken links?
-
-```bash
-git clone https://github.com/trimstray/the-book-of-secret-knowledge && cd the-book-of-secret-knowledge
-
-for i in $(sed -n 's/.*href="\([^"]*\).*/\1/p' README.md | grep -v "^#") ; do
-
-  _rcode=$(curl -s -o /dev/null -w "%{http_code}" "$i")
-
-  if [[ "$_rcode" != "2"* ]] ; then echo " -> $i - $_rcode" ; fi
-
-done
-```
-
-Result:
-
-```bash
- -> https://ghostproject.fr/ - 503
- -> http://www.mmnt.net/ - 302
- -> https://search.weleakinfo.com/ - 503
- [...]
-```

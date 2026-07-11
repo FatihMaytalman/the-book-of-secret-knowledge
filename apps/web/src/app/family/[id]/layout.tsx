@@ -1,11 +1,8 @@
 import type { ReactNode } from 'react';
-import { notFound } from 'next/navigation';
+import { cookies } from 'next/headers';
+import { notFound, redirect } from 'next/navigation';
 import { AppShell } from '@/components/layout/app-shell';
-
-const demoFamilies: Record<string, string> = {
-  maytalman: 'Maytalman Family Archive',
-  demo: 'Demo Family Workspace',
-};
+import { fetchFamily, TOKEN_KEY } from '@/lib/api';
 
 interface FamilyLayoutProps {
   children: ReactNode;
@@ -14,9 +11,17 @@ interface FamilyLayoutProps {
 
 export default async function FamilyLayout({ children, params }: FamilyLayoutProps) {
   const { id } = await params;
-  const familyName = demoFamilies[id];
+  const token = (await cookies()).get(TOKEN_KEY)?.value;
 
-  if (!familyName) {
+  if (!token) {
+    redirect('/login');
+  }
+
+  let familyName: string;
+  try {
+    const family = await fetchFamily(id, token);
+    familyName = family.name;
+  } catch {
     notFound();
   }
 
@@ -25,8 +30,4 @@ export default async function FamilyLayout({ children, params }: FamilyLayoutPro
       {children}
     </AppShell>
   );
-}
-
-export function generateStaticParams() {
-  return Object.keys(demoFamilies).map((id) => ({ id }));
 }

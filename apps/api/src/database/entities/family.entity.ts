@@ -65,4 +65,7 @@ export class FamilyMembershipEntity {
 
   @Column({ type: 'text', default: FamilyMembershipStatus.ACTIVE })
   status!: FamilyMembershipStatus;
+
+  @Column({ type: 'text', default: 'self' })
+  relationship!: string;
 }

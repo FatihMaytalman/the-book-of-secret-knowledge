@@ -1,4 +1,4 @@
-# Vercel deployment for AOM Legacy web
+# Vercel deployment for Bizimkiler web
 
 The Vercel project `the-book-of-secret-knowledge-web` must build the **monorepo workspace**, not the repository root package.
 
