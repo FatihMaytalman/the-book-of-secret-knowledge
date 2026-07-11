@@ -77,6 +77,7 @@ export class FamiliesService {
         userId: actorUserId,
         role: FamilyMembershipRole.OWNER,
         status: FamilyMembershipStatus.ACTIVE,
+        relationship: 'self',
       }),
     );
 

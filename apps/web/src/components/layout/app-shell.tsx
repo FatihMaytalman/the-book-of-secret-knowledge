@@ -15,7 +15,7 @@ export function AppShell({ familyId, familyName, children }: AppShellProps) {
         <aside className="border-b border-white/10 px-6 py-6 lg:w-72 lg:border-b-0 lg:border-r">
           <div className="mb-8">
             <Link href="/families" className="text-xs uppercase tracking-[0.24em] text-gold-500">
-              Kinvault
+              Bizimkiler
             </Link>
             <h1 className="mt-2 font-display text-2xl text-cream-50">{familyName}</h1>
             <p className="mt-1 text-sm text-warm-white/60">Private family archive</p>

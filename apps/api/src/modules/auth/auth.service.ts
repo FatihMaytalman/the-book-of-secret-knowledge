@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException, Inject, forwardRef } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,6 +6,7 @@ import { UserAccountEntity } from '../../database/entities';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { hashPassword, verifyPassword } from './password.util';
+import { InvitesService } from '../invites/invites.service';
 
 export interface AuthenticatedUser {
   userId: string;
@@ -28,6 +25,8 @@ export class AuthService {
     @InjectRepository(UserAccountEntity)
     private readonly userRepository: Repository<UserAccountEntity>,
     private readonly jwtService: JwtService,
+    @Inject(forwardRef(() => InvitesService))
+    private readonly invitesService: InvitesService,
   ) {}
 
   async register(dto: RegisterDto): Promise<AuthTokenResponse> {
@@ -46,6 +45,8 @@ export class AuthService {
       }),
     );
 
+    await this.invitesService.acceptPendingInvitesForUser(user.id);
+
     return this.buildToken(user);
   }
 
@@ -56,6 +57,8 @@ export class AuthService {
     if (!user || !verifyPassword(dto.password, user.passwordHash)) {
       throw new UnauthorizedException('Invalid email or password.');
     }
+
+    await this.invitesService.acceptPendingInvitesForUser(user.id);
 
     return this.buildToken(user);
   }

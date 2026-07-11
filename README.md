@@ -1,14 +1,14 @@
-<h1 align="center">Kinvault</h1>
+<h1 align="center">Bizimkiler</h1>
 
-<p align="center"><i>The private home for your family's memories, story, and legacy.</i></p>
+<p align="center"><i>Bizimkiler — One Photo. One Memory. One Family.</i></p>
 
 <p align="center">An <b>AOM Legacy</b> platform &nbsp;•&nbsp; <a href="https://AOMLegacy.com">AOMLegacy.com</a></p>
 
 ---
 
-## What is Kinvault?
+## What is Bizimkiler?
 
-Kinvault is a **self-hosted-first, AI-assisted platform for preserving a family's entire digital
+Bizimkiler is a **self-hosted-first, AI-assisted platform for preserving a family's entire digital
 legacy** — photos, videos, documents, stories, people, and relationships — in one private, permanent
 place that the family owns.
 
@@ -23,7 +23,7 @@ The same photo gets re-downloaded by everyone, storage fills up, context is lost
 history stays scattered across WhatsApp, Facebook, Instagram, iCloud, and Google Photos — and
 disappears when accounts lapse, phones are lost, or loved ones pass away.
 
-Kinvault creates **one trusted place** where:
+Bizimkiler creates **one trusted place** where:
 
 - everyone uploads once and duplicate copies are detected and linked automatically (the "WhatsApp
   duplication" problem disappears),

@@ -41,7 +41,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(46,196,182,0.12),_transparent_40%),linear-gradient(180deg,#0d1b2a_0%,#1a1a2e_100%)]">
       <div className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-16">
-        <p className="text-sm uppercase tracking-[0.28em] text-gold-500">Kinvault</p>
+        <p className="text-sm uppercase tracking-[0.28em] text-gold-500">Bizimkiler</p>
         <h1 className="mt-3 font-display text-4xl text-cream-50">
           {mode === 'login' ? 'Sign in to your family' : 'Create your account'}
         </h1>

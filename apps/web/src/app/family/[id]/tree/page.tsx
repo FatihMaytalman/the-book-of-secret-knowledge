@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
-import { PlaceholderPanel } from '@/components/layout/placeholder-panel';
+import { TreePageClient } from '@/components/tree/tree-page-client';
 
 export const metadata: Metadata = {
   title: 'Family Tree',
 };
 
-export default function TreePage() {
-  return (
-    <PlaceholderPanel
-      title="Interactive family tree"
-      description="Graph navigation with simple and expert modes for relationship exploration."
-    />
-  );
+interface TreePageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function TreePage({ params }: TreePageProps) {
+  const { id } = await params;
+  return <TreePageClient familyId={id} />;
 }

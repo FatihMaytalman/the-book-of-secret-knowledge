@@ -21,11 +21,11 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Kinvault',
-    template: '%s · Kinvault',
+    default: 'Bizimkiler',
+    template: '%s · Bizimkiler',
   },
   description:
-    "Kinvault - the private home for your family's memories, story, and legacy. An AOM Legacy platform.",
+    'Bizimkiler — One Photo. One Memory. One Family.',
 };
 
 export default function RootLayout({

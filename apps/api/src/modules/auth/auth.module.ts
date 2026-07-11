@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserAccountEntity } from '../../database/entities';
+import { InvitesModule } from '../invites/invites.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -10,6 +11,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserAccountEntity]),
+    forwardRef(() => InvitesModule),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
