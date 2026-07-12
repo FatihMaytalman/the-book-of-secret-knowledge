@@ -120,3 +120,9 @@ npm run dev:api
 npm run typecheck -w apps/api
 npm run build -w apps/api
 ```
+
+## Railway deployment
+
+The API is Railway-ready: it binds to `0.0.0.0:$PORT`, reads `DATABASE_URL` when Postgres is linked, runs migrations on startup, and exposes `GET /api/health` for deploy health checks.
+
+See [`infra/railway/README.md`](../../infra/railway/README.md) for service setup, environment variables, and superadmin bootstrap.
