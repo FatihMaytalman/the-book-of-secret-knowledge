@@ -1,8 +1,16 @@
 import type { FamilySummary, PersonSummary, PersonVisibility } from '@aomlegacy/shared';
 
-const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ??
-  'http://localhost:8080/api';
+function requireApiBaseUrl(): string {
+  const raw = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
+  if (!raw) {
+    throw new Error(
+      'NEXT_PUBLIC_API_BASE_URL is required. Set it to your API base URL (e.g. https://your-api.railway.app/api).',
+    );
+  }
+  return raw.replace(/\/$/, '');
+}
+
+const apiBaseUrl = requireApiBaseUrl();
 
 export interface HealthResponse {
   status: string;
