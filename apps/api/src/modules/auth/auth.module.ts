@@ -16,13 +16,17 @@ import { SuperadminBootstrapService } from './superadmin-bootstrap.service';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        secret: config.get<string>(
-          'AOM_JWT_SECRET',
-          'insecure-dev-secret-change-me-000000000000',
-        ),
-        signOptions: { expiresIn: '7d' },
-      }),
+      useFactory: (config: ConfigService) => {
+        const secret = config.get<string>('AOM_JWT_SECRET');
+        if (!secret && config.get<string>('NODE_ENV') === 'production') {
+          throw new Error('AOM_JWT_SECRET is required in production.');
+        }
+
+        return {
+          secret: secret ?? 'insecure-dev-secret-change-me-000000000000',
+          signOptions: { expiresIn: '7d' },
+        };
+      },
     }),
   ],
   controllers: [AuthController],

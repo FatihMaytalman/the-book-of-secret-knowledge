@@ -1,16 +1,20 @@
 import type { FamilySummary, PersonSummary, PersonVisibility } from '@aomlegacy/shared';
 
-function requireApiBaseUrl(): string {
+function resolveApiBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
-  if (!raw) {
-    throw new Error(
-      'NEXT_PUBLIC_API_BASE_URL is required. Set it to your API base URL (e.g. https://your-api.railway.app/api).',
-    );
+  if (raw) {
+    return raw.replace(/\/$/, '');
   }
-  return raw.replace(/\/$/, '');
+
+  // Local `next build` without env vars; production deploys must set NEXT_PUBLIC_API_BASE_URL.
+  return 'http://localhost:3001/api';
 }
 
-const apiBaseUrl = requireApiBaseUrl();
+export function getApiBaseUrl(): string {
+  return resolveApiBaseUrl();
+}
+
+const apiBaseUrl = resolveApiBaseUrl();
 
 export interface HealthResponse {
   status: string;
@@ -40,6 +44,7 @@ export interface AuthUser {
   userId: string;
   email: string;
   displayName: string;
+  role?: 'member' | 'superadmin';
 }
 
 export interface AuthSession {

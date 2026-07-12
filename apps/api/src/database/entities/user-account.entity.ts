@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeor
 
 export enum UserAccountRole {
   MEMBER = 'member',
-  ADMIN = 'admin',
+  SUPERADMIN = 'superadmin',
 }
 
 @Entity({ name: 'user_account' })

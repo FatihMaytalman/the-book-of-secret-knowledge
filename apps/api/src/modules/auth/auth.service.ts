@@ -12,6 +12,7 @@ export interface AuthenticatedUser {
   userId: string;
   email: string;
   displayName: string;
+  role: UserAccountRole;
 }
 
 export interface AuthTokenResponse {
@@ -80,6 +81,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       displayName: user.displayName,
+      role: user.role,
     });
 
     return { accessToken, user: authUser };
@@ -90,6 +92,7 @@ export class AuthService {
       userId: user.id,
       email: user.email,
       displayName: user.displayName,
+      role: user.role ?? UserAccountRole.MEMBER,
     };
   }
 }

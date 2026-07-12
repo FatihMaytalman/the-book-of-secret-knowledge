@@ -1,17 +1,6 @@
 import type { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
-function requireDatabaseUrl(): string {
-  const databaseUrl = process.env.DATABASE_URL?.trim();
-  if (!databaseUrl) {
-    throw new Error(
-      'DATABASE_URL is required. Set it to your PostgreSQL connection string.',
-    );
-  }
-  return databaseUrl;
-}
-
-export function buildPostgresTypeOrmOptions(): PostgresConnectionOptions {
-  const databaseUrl = requireDatabaseUrl();
+function parseDatabaseUrl(databaseUrl: string): PostgresConnectionOptions {
   const url = new URL(databaseUrl);
   const database = url.pathname.replace(/^\//, '');
 
@@ -34,4 +23,24 @@ export function buildPostgresTypeOrmOptions(): PostgresConnectionOptions {
     database,
     ...(ssl ? { ssl } : {}),
   };
+}
+
+function buildFromDiscreteEnv(): PostgresConnectionOptions {
+  return {
+    type: 'postgres',
+    host: process.env.AOM_DB_HOST ?? 'localhost',
+    port: Number(process.env.AOM_DB_PORT ?? 5432),
+    username: process.env.AOM_DB_USERNAME ?? 'aomlegacy',
+    password: process.env.AOM_DB_PASSWORD ?? 'aomlegacy',
+    database: process.env.AOM_DB_NAME ?? 'aomlegacy',
+  };
+}
+
+export function buildPostgresTypeOrmOptions(): PostgresConnectionOptions {
+  const databaseUrl = process.env.DATABASE_URL?.trim();
+  if (databaseUrl) {
+    return parseDatabaseUrl(databaseUrl);
+  }
+
+  return buildFromDiscreteEnv();
 }

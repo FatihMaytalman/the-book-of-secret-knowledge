@@ -6,7 +6,7 @@ import { AppModule } from './app.module';
 import { isCorsOriginAllowed, parseCorsOrigins } from './config/cors';
 
 async function bootstrap(): Promise<void> {
-  const allowedOrigins = parseCorsOrigins(process.env.CORS_ORIGINS);
+  const allowedOrigins = parseCorsOrigins();
 
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -38,13 +38,7 @@ async function bootstrap(): Promise<void> {
     }),
   );
 
-  const port = Number(
-    process.env.PORT ?? (process.env.NODE_ENV === 'production' ? undefined : 3000),
-  );
-  if (!Number.isFinite(port)) {
-    throw new Error('PORT is required in production.');
-  }
-
+  const port = Number(process.env.PORT ?? 3001);
   await app.listen(port, '0.0.0.0');
 }
 
