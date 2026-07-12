@@ -44,7 +44,7 @@ jobs:
       - name: Build Cloudflare bundle
         run: npx opennextjs-cloudflare build
         env:
-          NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL || 'https://api.aomlegacy.com/api' }}
+          NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://aomlegacy.com' }}
 
   deploy:

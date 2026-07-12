@@ -1,8 +1,16 @@
 import type { FamilySummary, PersonSummary, PersonVisibility } from '@aomlegacy/shared';
 
-const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ??
-  'http://localhost:8080/api';
+function requireApiBaseUrl(): string {
+  const value = process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '');
+  if (!value) {
+    throw new Error(
+      'NEXT_PUBLIC_API_BASE_URL is required but not set. Add it to apps/web/.env.local (see .env.example).',
+    );
+  }
+  return value;
+}
+
+const apiBaseUrl = requireApiBaseUrl();
 
 export interface HealthResponse {
   status: string;
