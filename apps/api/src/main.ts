@@ -3,13 +3,15 @@ import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, type NestFastifyApplication } from '@nestjs/platform-fastify';
 import multipart from '@fastify/multipart';
 import { AppModule } from './app.module';
+import { buildCorsOptions } from './cors.config';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
-    { cors: true },
   );
+
+  app.enableCors(buildCorsOptions(process.env.CORS_ORIGINS));
 
   await app.register(multipart, {
     limits: { fileSize: 10 * 1024 * 1024 },
