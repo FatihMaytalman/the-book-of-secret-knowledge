@@ -1,8 +1,7 @@
 import type { FamilySummary, PersonSummary, PersonVisibility } from '@aomlegacy/shared';
+import { requireApiBaseUrl } from '@/lib/urls';
 
-const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, '') ??
-  'http://localhost:8080/api';
+const apiBaseUrl = requireApiBaseUrl();
 
 export interface HealthResponse {
   status: string;
