@@ -7,6 +7,7 @@ import { InvitesModule } from '../invites/invites.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { SuperadminBootstrapService } from './superadmin-bootstrap.service';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtAuthGuard],
+  providers: [AuthService, JwtAuthGuard, SuperadminBootstrapService],
   exports: [TypeOrmModule, AuthService, JwtAuthGuard, JwtModule],
 })
 export class AuthModule {}

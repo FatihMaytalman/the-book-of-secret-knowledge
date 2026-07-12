@@ -2,7 +2,7 @@ import { ConflictException, Injectable, UnauthorizedException, Inject, forwardRe
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserAccountEntity } from '../../database/entities';
+import { UserAccountEntity, UserAccountRole } from '../../database/entities';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { hashPassword, verifyPassword } from './password.util';
@@ -42,6 +42,7 @@ export class AuthService {
         email,
         displayName: dto.displayName.trim(),
         passwordHash: hashPassword(dto.password),
+        role: UserAccountRole.MEMBER,
       }),
     );
 
