@@ -1,0 +1,16 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "RAILPACK",
+    "buildCommand": "npm ci && npm run build -w packages/shared && npm run build -w apps/api",
+    "watchPatterns": [
+      "/apps/api/**",
+      "/packages/shared/**"
+    ]
+  },
+  "deploy": {
+    "startCommand": "npm run start:prod -w apps/api",
+    "healthcheckPath": "/api/health",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}
